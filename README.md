@@ -2,7 +2,7 @@
 
 Bu proje, böbrek tümörü sınıflandırmaları hakkında kapsamlı bir referans seti sunan modern bir web sayfasıdır. GUPS (Genitoüriner Patoloji Derneği) ve WHO (Dünya Sağlık Örgütü) güncellemelerini içerir.
 
-![Renal Tumor Classifications](https://via.placeholder.com/800x400?text=Renal+Tumor+Classifications)
+(https://metinciris.github.io/renal/)
 
 ## Özellikler
 
