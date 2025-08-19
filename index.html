@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renal Tumor Classifications: GUPS and WHO Updates</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c6aa0;
+            --secondary: #4a9fea;
+            --accent: #7bc2f5;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --card-bg: #ffffff;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(45deg);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        nav {
+            background: white;
+            padding: 1.2rem 0;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            margin: -1rem auto 2.5rem;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            list-style: none;
+        }
+        
+        nav li {
+            position: relative;
+        }
+        
+        nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1.2rem;
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            background: rgba(77, 171, 247, 0.08);
+        }
+        
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        nav a:hover::before {
+            width: 100%;
+        }
+        
+        nav a:hover {
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        section {
+            background: var(--card-bg);
+            margin: 0;
+            padding: 0;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--secondary), var(--accent));
+            transition: width 0.3s ease;
+        }
+        
+        section:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        section:hover::before {
+            width: 7px;
+        }
+        
+        .section-content {
+            padding: 2rem;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding: 1.5rem 2rem;
+            background: rgba(77, 171, 247, 0.08);
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 .icon {
+            margin-right: 0.75rem;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 1.5rem 0 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        .reference-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+        
+        .reference-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: var(--light);
+            position: relative;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+        
+        .reference-item:hover {
+            background: #e9ecef;
+            border-left: 4px solid var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .year-badge {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .reference-content {
+            padding-top: 0.5rem;
+        }
+        
+        .reference-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            line-height: 1.4;
+        }
+        
+        .reference-authors {
+            color: #495057;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .reference-journal {
+            color: var(--secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .reference-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 0.75rem;
+            transition: var(--transition);
+        }
+        
+        .reference-link:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+        
+        .annotation {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(77, 171, 247, 0.1);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.95rem;
+        }
+        
+        .annotation strong {
+            color: var(--primary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2.5rem 0;
+            color: #6c757d;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px 16px 0 0;
+        }
+        
+        .icon {
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            nav li {
+                width: 100%;
+                text-align: center;
+            }
+            
+            nav a {
+                justify-content: center;
+            }
+            
+            h2 {
+                padding: 1.2rem;
+                font-size: 1.3rem;
+            }
+            
+            .section-content {
+                padding: 1.5rem;
+            }
+            
+            .reference-item {
+                padding: 1.2rem;
+            }
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Renal Tumor Classifications: GUPS and WHO Updates</h1>
+            <p class="subtitle">A Comprehensive Reference Set for Reviews and Lectures</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="#gups-updates"><i class="fas fa-sync-alt icon"></i>GUPS Updates</a></li>
+                <li><a href="#oncocytic-tumors"><i class="fas fa-microscope icon"></i>Oncocytic Tumors</a></li>
+                <li><a href="#chromophobe-related"><i class="fas fa-dna icon"></i>Chromophobe-Related</a></li>
+                <li><a href="#tuberous-sclerosis"><i class="fas fa-brain icon"></i>Tuberous Sclerosis</a></li>
+                <li><a href="#fh-sdh-deficient"><i class="fas fa-vial icon"></i>FH/SDH-Deficient</a></li>
+                <li><a href="#prnrp"><i class="fas fa-exchange-alt icon"></i>PRNRP</a></li>
+                <li><a href="#tubulocystic"><i class="fas fa-virus icon"></i>Tubulocystic RCC</a></li>
+                <li><a href="#thyroid-like"><i class="fas fa-th icon"></i>Thyroid-Like RCC</a></li>
+                <li><a href="#alk-rcc"><i class="fas fa-random icon"></i>ALK-RCC</a></li>
+                <li><a href="#suggestions"><i class="fas fa-lightbulb icon"></i>Suggestions</a></li>
+            </ul>
+        </nav>
+        
+        <div class="main-content">
+            <section id="gups-updates">
+                <h2><i class="fas fa-sync-alt icon"></i>GUPS Classification Updates (General Renal Neoplasia)</h2>
+                <div class="section-content">
+                    <p>These focus on GUPS's 2021 consensus on emerging renal entities, influencing WHO 2022 updates.</p>
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Novel, emerging and provisional renal entities: The Genitourinary Pathology Society (GUPS) update on renal neoplasia</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Mod Pathol. 2021;34(6):1167-1184</div>
+                                <a href="https://www.researchgate.net/publication/348942048_Novel_emerging_and_provisional_renal_entities_The_Genitourinary_Pathology_Society_GUPS_update_on_renal_neoplasia" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> Comprehensive GUPS review of new entities like oncocytic tumors and molecular subtypes.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2022</span>
+                            <div class="reference-content">
+                                <div class="reference-title">What's new in kidney tumor pathology 2022: WHO 5th edition updates</div>
+                                <div class="reference-authors">Williamson SR, et al.</div>
+                                <div class="reference-journal">World J Nephrol. 2022;11(6):152-159</div>
+                                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9682217/" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> Highlights GUPS-influenced changes in WHO classification, including provisional entities.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2024</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Updates from the 2022 WHO Classification of Kidney Epithelial Tumors</div>
+                                <div class="reference-authors">Mubarak M</div>
+                                <div class="reference-journal">J Clin Transl Pathol. 2024;4(2):70-80</div>
+                                <a href="https://ecancer.org/site-data/files/JCTP_2024_4%282%29_70_00002_Muhammed%2BMubarak.pdf" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> Rationale for GUPS/WHO revisions, with emphasis on diagnostic criteria.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="oncocytic-tumors">
+                <h2><i class="fas fa-microscope icon"></i>Oncocytic Tumors (LOT/EVT/HOT)</h2>
+                <div class="section-content">
+                    <p>Covers low-grade oncocytic tumor (LOT), eosinophilic vacuolated tumor (EVT), and high-grade oncocytic tumor (HOT).</p>
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2023</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Update on Selected Oncocytic Renal Cell Tumors</div>
+                                <div class="reference-authors">Alaghehbandan R, et al.</div>
+                                <div class="reference-journal">J Clin Transl Pathol. 2023;3(2):67-78</div>
+                                <a href="https://www.xiahepublishing.com/2771-165X/JCTP-2022-00032" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> Discusses LOT, EVT, HOT coexistence and multifocality.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2020</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Eosinophilic solid and cystic renal cell carcinoma mimicking epithelioid angiomyolipoma</div>
+                                <div class="reference-authors">Tjota M, et al.</div>
+                                <div class="reference-journal">Histopathology. 2020;76(5):767-773</div>
+                                <div class="annotation"><strong>Annotation:</strong> Related to EVT/HOT spectrum, with GUPS updates on classification.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2019</span>
+                            <div class="reference-content">
+                                <div class="reference-title">High-grade oncocytic tumor (HOT) of kidney in a patient with tuberous sclerosis complex</div>
+                                <div class="reference-authors">Hes O, et al.</div>
+                                <div class="reference-journal">J Clin Pathol. 2019;72(6):440-442</div>
+                                <a href="https://www.researchgate.net/publication/332527886_High-grade_Oncocytic_Tumor_HOT_of_Kidney_in_a_Patient_with_Tuberous_Sclerosis_Complex" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> Links HOT to tuberous sclerosis, per GUPS provisional status.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="chromophobe-related">
+                <h2><i class="fas fa-dna icon"></i>Chromophobe-Related Tumors</h2>
+                <div class="section-content">
+                    <p>Includes chromophobe RCC variants and overlaps with oncocytic entities.</p>
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">The Morphological Spectrum of Papillary Renal Cell Carcinoma and Prevalence of Provisional/Emerging Renal Tumor Entities with Papillary Growth</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Biomedicines. 2021;9(10):1418</div>
+                                <a href="https://www.mdpi.com/2227-9059/9/10/1418" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> Covers chromophobe overlaps with ESC, ALK, HOT, LOT.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2023</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Updates in Adult Renal Epithelial Tumor Classification</div>
+                                <div class="reference-authors">Williamson SR</div>
+                                <div class="reference-journal">ARUP Laboratories Lecture Slides</div>
+                                <a href="https://arup.utah.edu/media/hirsch-whoNeo-2023/lecture-slides.pdf" class="reference-link"><i class="fas fa-external-link-alt"></i> View Slides</a>
+                                <div class="annotation"><strong>Annotation:</strong> WHO/GUPS updates on chromophobe RCC differentials.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2023</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Updates in Adult Renal Neoplasia</div>
+                                <div class="reference-authors">Siadat F, et al.</div>
+                                <div class="reference-journal">College of American Pathologists</div>
+                                <a href="https://documents-cloud.cap.org/appdocs/learning/DestinationCME/2023_PITI/PDFs/WED_Updates_RenalNeoplasia.pdf" class="reference-link"><i class="fas fa-external-link-alt"></i> View Document</a>
+                                <div class="annotation"><strong>Annotation:</strong> Focuses on chromophobe-related emerging entities.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="tuberous-sclerosis">
+                <h2><i class="fas fa-brain icon"></i>Tuberous Sclerosis-Associated Tumors</h2>
+                <div class="section-content">
+                    <p>Links to oncocytic and other RCC in TSC patients.</p>
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2019</span>
+                            <div class="reference-content">
+                                <div class="reference-title">High-grade oncocytic tumor (HOT) of kidney in a patient with tuberous sclerosis complex</div>
+                                <div class="reference-authors">Hes O, et al.</div>
+                                <div class="reference-journal">J Clin Pathol. 2019;72(6):440-442</div>
+                                <a href="https://www.researchgate.net/publication/332527886_High-grade_Oncocytic_Tumor_HOT_of_Kidney_in_a_Patient_with_Tuberous_Sclerosis_Complex" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> TSC association with HOT.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Novel, emerging and provisional renal entities: GUPS update</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Mod Pathol. 2021</div>
+                                <div class="annotation"><strong>Annotation:</strong> TSC-related RCC as provisional in GUPS.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2024</span>
+                            <div class="reference-content">
+                                <div class="reference-title">The WHO 2022 Classification of Renal Neoplasms (5th Edition)</div>
+                                <div class="reference-authors">Williamson SR, et al.</div>
+                                <div class="reference-journal">J Clin Transl Pathol. 2024;4(2):43-56</div>
+                                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11100973/" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> TSC-associated RCC in WHO/GUPS framework.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="fh-sdh-deficient">
+                <h2><i class="fas fa-vial icon"></i>FH/SDH-Deficient RCC</h2>
+                <div class="section-content">
+                    <p>Fumarate hydratase (FH) and succinate dehydrogenase (SDH) deficient tumors.</p>
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Towards a new WHO classification of renal cell tumor</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Transl Androl Urol. 2021;10(3):1231-1246</div>
+                                <a href="https://tau.amegroups.org/article/view/57816/html" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> Includes FH/SDH-deficient as new entities.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Morphological Spectrum of Papillary RCC</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Biomedicines. 2021</div>
+                                <div class="annotation"><strong>Annotation:</strong> Differentials for FH-deficient, including tubulocystic.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2024</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Updates from 2022 WHO Classification</div>
+                                <div class="reference-authors">Mubarak M</div>
+                                <div class="reference-journal">J Clin Transl Pathol. 2024</div>
+                                <div class="annotation"><strong>Annotation:</strong> Molecular rationale for FH/SDH subtypes.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="prnrp">
+                <h2><i class="fas fa-exchange-alt icon"></i>PRNRP (Papillary Renal Neoplasm with Reverse Polarity)</h2>
+                <div class="section-content">
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2020</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Recurrent KRAS mutations in papillary renal neoplasm with reverse polarity</div>
+                                <div class="reference-authors">Al-Obaidy KI, et al.</div>
+                                <div class="reference-journal">Mod Pathol. 2020;33(6):1157-1164</div>
+                                <div class="annotation"><strong>Annotation:</strong> Defines PRNRP as emerging entity per GUPS.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">GUPS update on renal neoplasia</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Mod Pathol. 2021</div>
+                                <div class="annotation"><strong>Annotation:</strong> PRNRP in provisional category.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2024</span>
+                            <div class="reference-content">
+                                <div class="reference-title">WHO 2022 Classification</div>
+                                <div class="reference-authors">Williamson SR, et al.</div>
+                                <div class="reference-journal">J Clin Transl Pathol. 2024</div>
+                                <div class="annotation"><strong>Annotation:</strong> Integration into papillary RCC spectrum.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="tubulocystic">
+                <h2><i class="fas fa-virus icon"></i>Tubulocystic RCC</h2>
+                <div class="section-content">
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Towards a new WHO classification</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Transl Androl Urol. 2021</div>
+                                <div class="annotation"><strong>Annotation:</strong> Tubulocystic as recognized entity.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Morphological Spectrum of Papillary RCC</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Biomedicines. 2021</div>
+                                <div class="annotation"><strong>Annotation:</strong> Differentials with FH-deficient.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2022</span>
+                            <div class="reference-content">
+                                <div class="reference-title">The 2022 World Health Organization Classification of Tumours of the Urinary System and Male Genital Organs</div>
+                                <div class="reference-authors">Moch H, et al.</div>
+                                <div class="reference-journal">Eur Urol. 2022;82(5):458-468</div>
+                                <a href="https://www.sciencedirect.com/science/article/pii/S0302283822024678" class="reference-link"><i class="fas fa-external-link-alt"></i> View Article</a>
+                                <div class="annotation"><strong>Annotation:</strong> WHO updates on tubulocystic.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="thyroid-like">
+                <h2><i class="fas fa-th icon"></i>Thyroid-Like Follicular RCC</h2>
+                <div class="section-content">
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">GUPS update</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Mod Pathol. 2021</div>
+                                <div class="annotation"><strong>Annotation:</strong> Provisional status.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2022</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Kidney tumor pathology 2022</div>
+                                <div class="reference-authors">Williamson SR, et al.</div>
+                                <div class="reference-journal">World J Nephrol. 2022</div>
+                                <div class="annotation"><strong>Annotation:</strong> Diagnostic features.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2022</span>
+                            <div class="reference-content">
+                                <div class="reference-title">WHO 2022 Classification</div>
+                                <div class="reference-authors">Moch H, et al.</div>
+                                <div class="reference-journal">Eur Urol. 2022</div>
+                                <div class="annotation"><strong>Annotation:</strong> Included in emerging entities.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="alk-rcc">
+                <h2><i class="fas fa-random icon"></i>ALK-Rearranged RCC (ALK-RCC)</h2>
+                <div class="section-content">
+                    <ul class="reference-list">
+                        <li class="reference-item">
+                            <span class="year-badge">2021</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Morphological Spectrum of Papillary RCC</div>
+                                <div class="reference-authors">Trpkov K, et al.</div>
+                                <div class="reference-journal">Biomedicines. 2021</div>
+                                <div class="annotation"><strong>Annotation:</strong> ALK in papillary growth entities.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2022</span>
+                            <div class="reference-content">
+                                <div class="reference-title">Updates in kidney tumor pathology</div>
+                                <div class="reference-authors">Williamson SR, et al.</div>
+                                <div class="reference-journal">World J Nephrol. 2022</div>
+                                <div class="annotation"><strong>Annotation:</strong> Molecular definition per GUPS/WHO.</div>
+                            </div>
+                        </li>
+                        <li class="reference-item">
+                            <span class="year-badge">2022</span>
+                            <div class="reference-content">
+                                <div class="reference-title">WHO 2022 Classification</div>
+                                <div class="reference-authors">Moch H, et al.</div>
+                                <div class="reference-journal">Eur Urol. 2022</div>
+                                <div class="annotation"><strong>Annotation:</strong> As a distinct subtype.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="suggestions">
+                <h2><i class="fas fa-lightbulb icon"></i>Suggestions for Use</h2>
+                <div class="section-content">
+                    <p>For lectures, group by molecular (e.g., FH/SDH, ALK) vs. morphological themes (e.g., oncocytic, chromophobe). For reviews, expand with full-text citations and cross-references. This set is non-exhaustive (~20 references); add images or diagrams for visual aids in presentations.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+    
+    <footer>
+        <div class="container">
+            <p>Compiled based on 2021-2024 literature. For updates, consult PubMed or WHO resources. &copy; 2025 Reference Set.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Back to top button functionality
+        const backToTopButton = document.querySelector('.back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Smooth scrolling for anchor links with offset for fixed nav
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const navHeight = document.querySelector('nav').offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
