@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renal Patoloji Tanı Algoritması (Referans Sürüm)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --header-bg: #2c3e50;
+            --header-text: #ecf0f1;
+            --primary: #34495e;
+            --accent: #2980b9;
+            --bg-body: #f5f7fa;
+            --card-bg: #ffffff;
+            --border: #dcdde1;
+            --success-bg: #e8f5e9;
+            --success-text: #2e7d32;
+            --warning-bg: #fff3e0;
+            --warning-text: #e65100;
+            --danger-bg: #ffebee;
+            --danger-text: #c62828;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-body);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER & BREADCRUMBS --- */
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.9rem;
+            align-items: center;
+        }
+
+        .crumb {
+            cursor: pointer;
+            color: #bdc3c7;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .crumb:hover { color: #fff; text-decoration: underline; }
+        
+        .crumb::after {
+            content: '›';
+            margin-left: 8px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+
+        .crumb:last-child {
+            color: #fff;
+            font-weight: 500;
+            pointer-events: none;
+        }
+        .crumb:last-child::after { content: ''; }
+
+        /* --- MAIN CONTAINER --- */
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- DECISION CARD --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 1rem;
+        }
+
+        .question-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .question-note {
+            margin-top: 0.5rem;
+            color: #666;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .options-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-left: 4px solid transparent;
+            padding: 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            border-left-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .opt-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .opt-desc {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* --- DIAGNOSIS RESULT --- */
+        .diagnosis-container {
+            border-top: 5px solid var(--success-text);
+        }
+
+        .diag-title {
+            font-family: 'Merriweather', serif;
+            color: var(--success-text);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .diag-subtitle { color: #666; font-size: 1rem; margin-bottom: 2rem; }
+
+        .info-section { margin-bottom: 2rem; }
+        .info-header {
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .marker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .marker-box {
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid;
+        }
+
+        .mb-pos { background: var(--success-bg); border-color: #c8e6c9; }
+        .mb-neg { background: var(--danger-bg); border-color: #ffcdd2; }
+        .mb-var { background: var(--warning-bg); border-color: #ffe0b2; }
+
+        .mb-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .mb-pos .mb-title { color: var(--success-text); }
+        .mb-neg .mb-title { color: var(--danger-text); }
+        .mb-var .mb-title { color: var(--warning-text); }
+
+        .marker-list { list-style: none; padding: 0; margin: 0; }
+        .marker-item { padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.95rem; font-weight: 500; }
+        .marker-item:last-child { border-bottom: none; }
+
+        .feature-list li { margin-bottom: 0.5rem; line-height: 1.6; }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            display: flex;
+            gap: 10px;
+        }
+        .alert-warn { background: #fff8e1; color: #616161; border: 1px solid #ffe082; }
+        
+        /* Reset Button */
+        .btn-reset {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn-reset:hover { background: var(--accent); }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="app-title">Renal Patoloji Tanı Sistemi</div>
+    <div class="breadcrumbs" id="breadcrumbs">
+        </div>
+</header>
+
+<main id="mainArea">
+    </main>
+
+<script>
+    /* VERİ YAPISI 
+       Mahmut Akgül sunumu ve sağlanan algoritmalar temel alınmıştır.
+       Vimentin ve Hale Kolloidal Demir çıkarılmıştır.
+       Onkositik algoritma: Grade/Atipi -> Morfoloji -> Belirteçler.
+    */
+
+    const database = {
+        // --- BAŞLANGIÇ ---
+        'root': {
+            type: 'decision',
+            title: "Baskın Morfolojik Patern",
+            note: "Tümörün düşük büyütmede görülen ana karakterini seçiniz.",
+            options: [
+                { id: 'onco_entry', title: "Eozinofilik / Onkositik Sitoplazma", desc: "Pembe, granüler sitoplazma. (Mahmut Akgül Algoritması)" },
+                { id: 'clear_entry', title: "Berrak Hücreli Sitoplazma", desc: "Boş sitoplazma, zengin vasküler ağ." },
+                { id: 'pap_entry', title: "Papiller Yapı", desc: "Fibrovasküler korlar." },
+                { id: 'stroma_entry', title: "Spesifik Stroma / Karışık", desc: "Belirgin fibromiyomatöz stroma veya sarkomatoid özellikler." }
+            ]
+        },
+
+        // --- 1. EOZİNOFİLİK / ONKOSİTİK DAL (Mahmut Akgül Algoritması) ---
+        'onco_entry': {
+            type: 'decision',
+            title: "Eozinofilik Tümörler: Grade ve Histolojik Patern",
+            note: "Onkositik tümörler önce nükleer atipi, grade ve mimari yapıya göre ayrılır, ardından İHK uygulanır. KIT ve KRT7 temel belirteçlerdir.",
+            options: [
+                { id: 'onco_low_grade', title: "Düşük Dereceli (Low Grade) Eozinofilik Tümörler", desc: "Uniform nükleuslar, perinükleer halo, solid/nest yapıları. (Onkositom, ChRCC, LOT, SDH)" },
+                { id: 'onco_high_grade', title: "Yüksek Dereceli (High Grade) ve Vakuollü Tümörler", desc: "Belirgin nükleol, pleomorfizm, sitoplazmik vakuoller veya solid-kistik alanlar. (EVT, ESC, AML, Bifazik)" },
+                { id: 'onco_papillary', title: "Eozinofilik Papiller Tümörler", desc: "Papiller mimari gösteren eozinofilik tümörler." }
+            ]
+        },
+
+        // 1.A Düşük Dereceli
+        'onco_low_grade': {
+            type: 'decision',
+            title: "Düşük Dereceli Eozinofilik: İHK Profili (KIT & KRT7)",
+            note: "Bu grupta KIT (CD117) ve KRT7 (CK7) kombinasyonu tanı koydurucudur.",
+            options: [
+                { id: 'dx_chrcc', title: "KIT(+) / KRT7(+) Diffüz | Raisinoid Nükleus", desc: "Klasik Kromofob RHK. Buruşuk nükleus, bitki hücresi zarı." },
+                { id: 'dx_lot', title: "KIT(+) / KRT7(+) Diffüz | Yuvarlak Nükleus", desc: "LOT (Düşük Dereceli Onkositik Tümör). Halo yok, nükleus düzgün." },
+                { id: 'dx_onco', title: "KIT(+) / KRT7(-) veya Fokal", desc: "Renal Onkositom. CD10 negatiftir." },
+                { id: 'dx_sdh', title: "KIT(-) / KRT7(-) | Vakuol ve İnklüzyon", desc: "SDH-Eksik RHK. SDHB kaybı vardır." }
+            ]
+        },
+
+        // 1.B Yüksek Dereceli
+        'onco_high_grade': {
+            type: 'decision',
+            title: "Yüksek Dereceli/Vakuollü: İHK ve Özel Belirteçler",
+            note: "Bu grupta CD10, KRT20, Katepsin K ve Melanotik belirteçler devreye girer.",
+            options: [
+                { id: 'dx_evt', title: "KIT(+) / CD10(+) / Katepsin K(+)", desc: "EVT (Eozinofilik Vakuollü Tümör). KRT7 negatiftir." },
+                { id: 'dx_esc', title: "KRT20(+) / GPNMB(+) / KRT7(-)", desc: "ESC-RCC (Eozinofilik Solid ve Kistik). TSC mutasyonu ilişkilidir." },
+                { id: 'dx_aml', title: "HMB45(+) / MelanA(+) / KIT(+)", desc: "Epiteloid AML (PEComa). PAX8 genellikle negatiftir." },
+                { id: 'dx_biphasic', title: "KIT(+) / CD10(+) / GPNMB(+) / KRT7(-)", desc: "Bifazik Hiyalinize Psammomatöz (BHP) RHK veya benzeri." }
+            ]
+        },
+
+        // 1.C Eozinofilik Papiller
+        'onco_papillary': {
+            type: 'decision',
+            title: "Eozinofilik Papiller Tümörler",
+            note: "Ters polarite ve FH durumu kontrol edilmelidir.",
+            options: [
+                { id: 'dx_reverse_pol', title: "KRT7(+) / GATA3(+) / L1CAM(+)", desc: "Ters Polariteli Papiller Neoplazm. Apikal nükleus." },
+                { id: 'dx_fh', title: "FH Kaybı / 2SC(+) / KRT7(-)", desc: "FH-Eksik RHK (Yüksek Grade). Prominent eozinofilik nükleol." },
+                { id: 'dx_pap_high', title: "KRT7(+) / AMACR(+) / FH Korunmuş", desc: "Papiller RHK (Yüksek Grade/Onkositik varyant)." }
+            ]
+        },
+
+
+        // --- 2. BERRAK HÜCRELİ DAL ---
+        'clear_entry': {
+            type: 'decision',
+            title: "Berrak Hücreli: CA9 ve KRT7 Ayrımı",
+            note: "Vasküler patern ve İHK profili esastır.",
+            options: [
+                { id: 'dx_ccrcc', title: "CA9(+) 'Box-like' / KRT7(-)", desc: "Berrak Hücreli RHK (ccRCC)." },
+                { id: 'dx_ccpt', title: "CA9(+) 'Cup-like' / KRT7(+) Diffüz", desc: "Berrak Hücreli Papiller RHT (CCPT)." },
+                { id: 'dx_tfe3', title: "CA9(-) / KRT7(-) / TFE3(+)", desc: "Translokasyon (MiT) RHK." }
+            ]
+        },
+
+        // --- 3. PAPİLLER DAL ---
+        'pap_entry': {
+            type: 'decision',
+            title: "Papiller: Grade ve Özel Durumlar",
+            note: "Tip 1/2 ayrımı yerine artık Grade ve FH/Moleküler özellikler kullanılır.",
+            options: [
+                { id: 'dx_pap_classic', title: "Düşük Grade / KRT7(+) / AMACR(+)", desc: "Klasik Papiller RHK." },
+                { id: 'dx_metanephric', title: "WT1(+) / CD57(+) / Mavi Görünüm", desc: "Metanefrik Adenom." },
+                { id: 'dx_fh', title: "Yüksek Grade / FH Kaybı / İri Nükleol", desc: "FH-Eksik RHK (HLRCC)." } // Yukarıdaki ile aynı ID'ye gider
+            ]
+        },
+
+        // --- 4. STROMA / KARIŞIK DAL ---
+        'stroma_entry': {
+            type: 'decision',
+            title: "Fibromiyomatöz Stroma Varlığı",
+            note: "Image 1 Algoritması: CA9/KRT7 sonrası GATA3 ve GPNMB kullanımı.",
+            options: [
+                { id: 'dx_ccrcc', title: "CA9(+) / KRT7(-)", desc: "Stromalı ccRCC." },
+                { id: 'dx_ccpt', title: "CA9(+) / KRT7(+) / GATA3(+)", desc: "Stromalı CCPT." },
+                { id: 'dx_tsc_mut', title: "GATA3(-) / GPNMB(+) / Epiteloid", desc: "TSC/MTOR Yolağı Mutasyonlu RHK." },
+                { id: 'dx_eloc', title: "GATA3(-) / GPNMB(-) / CA9(+)", desc: "ELOC (TCEB1) Mutasyonlu RHK." }
+            ]
+        },
+
+
+        // --- TANI KARTLARI (DETAYLI) ---
+
+        'dx_chrcc': {
+            type: 'result',
+            title: "Kromofob Renal Hücreli Karsinom (ChRCC)",
+            subtitle: "Eozinofilik Düşük Dereceli Tümör",
+            features: [
+                "Nükleer Morfoloji: 'Raisinoid' (kuru üzüm benzeri) buruşuk nükleus.",
+                "Sitoplazma: Belirgin hücre sınırları (bitki hücresi), perinükleer halo.",
+                "Hale Kolloidal Demir artık şart değil ancak yapılırsa diffüz retiküler pozitiftir."
+            ],
+            markers: {
+                pos: ["KIT (CD117)", "KRT7 (Diffüz)", "E-Cadherin", "Parvalbumin"],
+                neg: ["CD10", "Vimentin", "GATA3", "GPNMB"],
+                var: []
+            },
+            alert: "LOT (Yuvarlak nükleus) ve Onkositom (KRT7 negatifliği) ile karışır."
+        },
+
+        'dx_onco': {
+            type: 'result',
+            title: "Renal Onkositom",
+            subtitle: "Eozinofilik Düşük Dereceli Tümör (Benign)",
+            features: [
+                "Nükleer Morfoloji: Yuvarlak, düzenli nükleuslar.",
+                "Yapı: Nest (yuva) yapıları, miksoid stroma. Santral skar.",
+                "KRT7 negatifliği (veya sadece 'archipelagos' tarzı fokal pozitiflik) en önemli ayrımdır."
+            ],
+            markers: {
+                pos: ["KIT (CD117)", "S100A1", "E-Cadherin"],
+                neg: ["KRT7 (Genellikle)", "CD10", "Vimentin", "GATA3", "GPNMB"],
+                var: []
+            },
+            alert: "EVT'den CD10 negatifliği ile ayrılır."
+        },
+
+        'dx_lot': {
+            type: 'result',
+            title: "LOT (Düşük Dereceli Onkositik Tümör)",
+            subtitle: "Eozinofilik Düşük Dereceli Tümör",
+            features: [
+                "Kromofob benzeri immün profil (KIT+/KRT7+) gösterir ancak morfolojisi Onkositom (yuvarlak nükleus, halosuz) gibidir.",
+                "TSC/MTOR yolağı mutasyonları ile ilişkilidir."
+            ],
+            markers: {
+                pos: ["KIT (CD117)", "KRT7 (Diffüz)"],
+                neg: ["CD10", "GATA3", "GPNMB", "Hale Kolloidal Demir"],
+                var: []
+            },
+            alert: "Hale Kolloidal Demir negatifliği ile Kromofobdan ayrılır."
+        },
+
+        'dx_sdh': {
+            type: 'result',
+            title: "SDH-Eksik Renal Hücreli Karsinom",
+            subtitle: "Eozinofilik Düşük Dereceli Tümör",
+            features: [
+                "Sitoplazmik vakuoller, soluk nükleer inklüzyonlar.",
+                "Onkositom benzeri (solid/nest) büyüme.",
+                "KIT negatiftir."
+            ],
+            markers: {
+                pos: ["PAX8", "GATA3 (Sıklıkla)"],
+                neg: ["SDHB (KAYIP)", "KIT (CD117)", "KRT7"],
+                var: []
+            },
+            alert: "SDHB İHK kaybı tanı koydurucudur. Genetik danışmanlık gerekir."
+        },
+
+        'dx_evt': {
+            type: 'result',
+            title: "EVT (Eozinofilik Vakuollü Tümör)",
+            subtitle: "Eozinofilik Yüksek Dereceli Tümör",
+            features: [
+                "Büyük sitoplazmik vakuoller karakteristiktir.",
+                "Belirgin nükleol (Yüksek grade).",
+                "Onkositomdan en büyük farkı CD10 pozitifliğidir."
+            ],
+            markers: {
+                pos: ["KIT (CD117)", "CD10 (Diffüz)", "Katepsin K", "GPNMB"],
+                neg: ["KRT7", "GATA3"],
+                var: []
+            },
+            alert: "KRT7 negatif, CD10 pozitiftir."
+        },
+
+        'dx_esc': {
+            type: 'result',
+            title: "ESC-RCC (Eozinofilik Solid ve Kistik RHK)",
+            subtitle: "Eozinofilik Yüksek Dereceli Tümör",
+            features: [
+                "Solid ve kistik alanlar bir arada.",
+                "Sitoplazmada bazofilik granüller.",
+                "Kadınlarda sık, TSC mutasyonu ilişkili."
+            ],
+            markers: {
+                pos: ["KRT20 (Patognomonik)", "Katepsin K", "GPNMB"],
+                neg: ["KIT (CD117)", "KRT7", "CD10"],
+                var: ["AMACR"]
+            },
+            alert: "Böbrekte KRT20 pozitifliği bu tümör için çok karakteristiktir."
+        },
+
+        'dx_aml': {
+            type: 'result',
+            title: "Epiteloid Anjiyomiyolipom (PEComa)",
+            subtitle: "Mezenkimal Tümör",
+            features: [
+                "Yüksek dereceli atipi, mitoz, nekroz olabilir.",
+                "Epiteloid morfoloji karsinomu taklit eder."
+            ],
+            markers: {
+                pos: ["HMB45", "MelanA", "Katepsin K", "GPNMB", "KIT (CD117)"],
+                neg: ["PAX8 (Genellikle negatif, farktır)", "KRT7", "GATA3"],
+                var: ["TFE3"]
+            },
+            alert: "PAX8 negatifliği ile RHK'dan ayrılır."
+        },
+
+        'dx_reverse_pol': {
+            type: 'result',
+            title: "Ters Polariteli Papiller Neoplazm",
+            subtitle: "Eozinofilik Papiller Tümör",
+            features: [
+                "İnce dallanan papiller yapılar.",
+                "Nükleuslar apikalde (lümen tarafında) toplanır (Ters polarite).",
+                "Sitoplazma eozinofilik."
+            ],
+            markers: {
+                pos: ["KRT7 (Diffüz)", "GATA3", "L1CAM", "AMACR"],
+                neg: ["Vimentin", "CD10"],
+                var: []
+            },
+            alert: "GATA3 ve L1CAM pozitifliği karakteristiktir."
+        },
+
+        'dx_ccrcc': {
+            type: 'result',
+            title: "Berrak Hücreli RHK (ccRCC)",
+            subtitle: "Klasik Tip",
+            features: ["Berrak sitoplazma, sinüzoidal damarlar."],
+            markers: {
+                pos: ["CA9 (Box-like)", "CD10", "Vimentin", "PAX8"],
+                neg: ["KRT7 (Genellikle)", "AMACR", "HMWK"],
+                var: []
+            },
+            alert: "Eozinofilik varyantında CA9+, KIT- profili önemlidir."
+        },
+
+        'dx_ccpt': {
+            type: 'result',
+            title: "Berrak Hücreli Papiller RHT (CCPT)",
+            subtitle: "İndolent Tümör",
+            features: ["Apikal nükleus (Piyano tuşu), kupa tarzı (cup-like) CA9 boyanması."],
+            markers: {
+                pos: ["KRT7", "CA9 (Cup-like)", "GATA3", "HMWK"],
+                neg: ["CD10", "AMACR", "TFE3"],
+                var: []
+            },
+            alert: "GATA3 pozitifliği ve CD10 negatifliği tanıyı destekler."
+        },
+
+        'dx_fh': {
+            type: 'result',
+            title: "FH-Eksik RHK (HLRCC)",
+            subtitle: "Yüksek Riskli Tümör",
+            features: ["Prominent eozinofilik nükleol (Gözlüklü nükleus), perinükleer halo."],
+            markers: {
+                pos: ["2SC (Nükleer/Sitoplazmik)", "PAX8"],
+                neg: ["FH (Kayıp)", "KRT7"],
+                var: ["CD10"]
+            },
+            alert: "Şüpheli morfolojide mutlaka 2SC veya FH boyası yapılmalıdır."
+        },
+        
+        'dx_tsc_mut': {
+            type: 'result',
+            title: "TSC/MTOR Yolağı Mutasyonlu RHK",
+            subtitle: "Stromalı / Eozinofilik Tümör",
+            features: ["Fibromiyomatöz stroma, epiteloid hücreler."],
+            markers: {
+                pos: ["GPNMB", "Katepsin K", "PAX8"],
+                neg: ["GATA3", "KRT7"],
+                var: ["CD10"]
+            },
+            alert: "GPNMB pozitifliği ayırt edicidir."
+        },
+
+        'dx_eloc': {
+            type: 'result',
+            title: "ELOC (TCEB1) Mutasyonlu RHK",
+            subtitle: "Stromalı Tümör",
+            features: ["Kalın fibromiyomatöz stroma, berrak hücreler. CCPT taklidi yapar."],
+            markers: {
+                pos: ["CA9", "CD10", "PAX8"],
+                neg: ["KRT7", "GATA3", "GPNMB", "HMWK"],
+                var: []
+            },
+            alert: "KRT7 negatifliği ile CCPT'den ayrılır."
+        },
+        
+        'dx_tfe3': {
+             type: 'result',
+            title: "Translokasyon RHK (TFE3)",
+            subtitle: "MiT Ailesi",
+            features: ["Genç hasta, psammoma cisimleri, hacimli sitoplazma."],
+            markers: {
+                pos: ["TFE3", "Katepsin K", "MelanA"],
+                neg: ["KRT7", "CA9"],
+                var: ["CD10"]
+            },
+            alert: "FISH ile doğrulama önerilir."
+        },
+        
+         'dx_pap_classic': {
+             type: 'result',
+            title: "Papiller RHK (Klasik)",
+            subtitle: "Tip 1 Benzeri",
+            features: ["Tek sıra hücreler, bazofilik/soluk sitoplazma."],
+            markers: {
+                pos: ["KRT7", "AMACR"],
+                neg: ["CA9"],
+                var: []
+            },
+            alert: "Grade belirtilmelidir."
+        },
+        
+         'dx_metanephric': {
+             type: 'result',
+            title: "Metanefrik Adenom",
+            subtitle: "Benign Tümör",
+            features: ["Embriyonel görünüm, çok sellüler, mavi."],
+            markers: {
+                pos: ["WT1", "CD57", "BRAF V600E"],
+                neg: ["AMACR", "KRT7"],
+                var: []
+            },
+            alert: "Papiller RHK'dan AMACR negatifliği ve WT1 pozitifliği ile ayrılır."
+        },
+        
+        'dx_biphasic': {
+             type: 'result',
+            title: "Bifazik Hiyalinize Psammomatöz RHK",
+            subtitle: "Eozinofilik Tümör",
+            features: ["Çift hücre popülasyonu, sklerotik stroma, psammoma."],
+            markers: {
+                pos: ["KIT (CD117)", "CD10", "GPNMB"],
+                neg: ["KRT7"],
+                var: []
+            },
+            alert: "NF2 mutasyonu ile ilişkilidir."
+        }
+    };
+
+    // --- APP ENGINE ---
+
+    const breadcrumbsEl = document.getElementById('breadcrumbs');
+    const mainArea = document.getElementById('mainArea');
+    let historyStack = [];
+
+    function init() {
+        navigateTo('root');
+    }
+
+    function navigateTo(id) {
+        historyStack.push(id);
+        render(id);
+        renderBreadcrumbs();
+    }
+
+    function jumpTo(index) {
+        // Geçmişi o noktaya kadar kes
+        historyStack = historyStack.slice(0, index + 1);
+        const id = historyStack[historyStack.length - 1];
+        render(id);
+        renderBreadcrumbs();
+    }
+
+    function renderBreadcrumbs() {
+        breadcrumbsEl.innerHTML = '';
+        historyStack.forEach((id, index) => {
+            const item = database[id];
+            const span = document.createElement('span');
+            span.className = 'crumb';
+            // Başlık çok uzunsa kısalt
+            let title = item.title;
+            if(title.length > 20) title = title.substring(0, 18) + '...';
+            
+            span.innerText = title;
+            span.onclick = () => jumpTo(index);
+            breadcrumbsEl.appendChild(span);
+        });
+    }
+
+    function render(id) {
+        const item = database[id];
+        mainArea.innerHTML = ''; // Temizle
+
+        const card = document.createElement('div');
+        card.className = 'card ' + (item.type === 'result' ? 'diagnosis-container' : '');
+
+        if (item.type === 'decision') {
+            // KARAR KARTI
+            card.innerHTML = `
+                <div class="question-header">
+                    <h2 class="question-title">${item.title}</h2>
+                    <div class="question-note">${item.note}</div>
+                </div>
+                <div class="options-list">
+                    ${item.options.map(opt => `
+                        <button class="option-btn" onclick="navigateTo('${opt.id}')">
+                            <span class="opt-title">${opt.title}</span>
+                            <span class="opt-desc">${opt.desc}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        } else if (item.type === 'result') {
+            // SONUÇ KARTI
+            card.innerHTML = `
+                <h1 class="diag-title">${item.title}</h1>
+                <div class="diag-subtitle">${item.subtitle}</div>
+                
+                <div class="info-section">
+                    <div class="info-header">Morfolojik Özellikler</div>
+                    <ul class="marker-list feature-list">
+                        ${item.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-header">İmmünhistokimya Paneli</div>
+                    <div class="marker-grid">
+                        <div class="marker-box mb-pos">
+                            <div class="mb-title">Pozitif (+)</div>
+                            <ul class="marker-list">
+                                ${item.markers.pos.map(m => `<li class="marker-item">${m}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="marker-box mb-neg">
+                            <div class="mb-title">Negatif (-)</div>
+                            <ul class="marker-list">
+                                ${item.markers.neg.map(m => `<li class="marker-item">${m}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="marker-box mb-var">
+                            <div class="mb-title">Değişken / Fokal</div>
+                            <ul class="marker-list">
+                                ${item.markers.var.length ? item.markers.var.map(m => `<li class="marker-item">${m}</li>`).join('') : '<li class="marker-item">-</li>'}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warn">
+                    <strong>⚠️ Kritik Not:</strong> ${item.alert}
+                </div>
+
+                <button class="btn-reset" onclick="location.reload()">⟲ Yeni Vaka Başlat</button>
+            `;
+        }
+        
+        mainArea.appendChild(card);
+        window.scrollTo(0,0);
+    }
+
+    // Başlat
+    init();
+
+</script>
+
+</body>
+</html>
