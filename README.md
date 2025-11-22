@@ -3,6 +3,7 @@
 Bu proje, böbrek tümörü sınıflandırmaları hakkında kapsamlı bir referans seti sunan modern bir web sayfasıdır. GUPS (Genitoüriner Patoloji Derneği) ve WHO (Dünya Sağlık Örgütü) güncellemelerini içerir.
 
 (https://metinciris.github.io/renal/)
+Yenilendi. Kasım 2025
 
 ## Özellikler
 
