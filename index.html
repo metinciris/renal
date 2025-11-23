@@ -1,530 +1,1523 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RCC Tanı Algoritması</title>
+  <meta charset="UTF-8" />
+  <title>Renal Onkositik Tümör Algoritması</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Renal onkositik / eozinofilik tümörler için pratik morfoloji + İHK temelli tanı algoritması (eğitim amaçlı referans)." />
+
   <style>
     :root {
-      --main-color: #536878;
-      --accent-color: #7393B3;
+      --bg: #0f172a;
+      --bg-elevated: #020617;
+      --bg-card: #020617;
+      --border-subtle: rgba(148, 163, 184, 0.2);
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.08);
+      --accent-strong: #16a34a;
+      --accent-muted: rgba(45, 212, 191, 0.12);
+      --accent2: #38bdf8;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --chip-bg: rgba(15, 23, 42, 0.8);
+      --danger: #f97373;
+      --scrollbar: #4b5563;
+      --radius-lg: 1rem;
+      --radius-xl: 1.5rem;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.55);
+      --shadow-card: 0 16px 38px rgba(15, 23, 42, 0.65);
+      --transition-fast: 150ms ease-out;
+      --transition-med: 220ms ease-out;
     }
-    body {
-      font-family: sans-serif;
-      background: #FFFFFF;
-      color: #000000;
-      margin: 0;
-      padding: 1em;
-    }
-    h1 {
-      text-align: center;
-      color: var(--main-color);
-      font-size: 1.5em;
-      margin-bottom: 1em;
-    }
-    #path {
-      margin-bottom: 1em;
-      padding: 0.5em;
-      background: #f0f4f7;
-      border-left: 4px solid var(--main-color);
-    }
-    #path strong {
-      color: #333;
-    }
-    #path ul {
-      margin: 0.5em 0 0 1em;
-      padding: 0;
-    }
-    #path li {
-      margin: 0.2em 0;
-    }
-    #content h2 {
-      color: var(--main-color);
-      font-size: 1.2em;
-      margin-bottom: 0.5em;
-    }
-    button.option {
-      display: block;
-      width: 100%;
+
+    * {
       box-sizing: border-box;
-      text-align: left;
-      border: 2px solid var(--main-color);
-      background: #fff;
-      color: var(--main-color);
-      padding: 0.5em 1em;
-      margin: 0.3em 0;
-      font-size: 1em;
-      border-radius: 4px;
-      cursor: pointer;
     }
-    button.option:hover {
-      background: var(--main-color);
-      color: #fff;
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+      color: var(--text);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #020617;
+      background-image:
+        radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.12), transparent 50%),
+        radial-gradient(circle at 100% 0, rgba(34, 197, 94, 0.12), transparent 50%);
+      background-attachment: fixed;
+    }
+
+    ::selection {
+      background: rgba(34, 197, 94, 0.35);
+      color: #f9fafb;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar);
+      border-radius: 999px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem 3rem;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.96),
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.7),
+        transparent
+      );
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.85rem 1.25rem 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .logo-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #bbf7d0, #22c55e 40%, #14532d 100%);
+      box-shadow:
+        0 0 0 1px rgba(34, 197, 94, 0.7),
+        0 10px 30px rgba(34, 197, 94, 0.65);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-dot::after {
+      content: "";
+      position: absolute;
+      inset: 18%;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      opacity: 0.85;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .brand-title {
+      font-size: 0.98rem;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .brand-subtitle {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
+      font-size: 0.78rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      background: rgba(15, 23, 42, 0.45);
+      text-decoration: none;
+      transition: background var(--transition-fast), color var(--transition-fast),
+                  border-color var(--transition-fast), transform 120ms ease-out;
+    }
+
+    .nav-link:hover {
+      background: rgba(34, 197, 94, 0.14);
+      color: #f9fafb;
+      border-color: rgba(34, 197, 94, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      margin-top: 2.1rem;
+      margin-bottom: 2rem;
+      padding: 1.4rem 1.4rem 1.5rem;
+      border-radius: 1.4rem;
+      background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.25), transparent 55%),
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 55%),
+        linear-gradient(to bottom right, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.3fr);
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .hero-main h1 {
+      font-size: clamp(1.55rem, 2.1vw, 1.8rem);
+      margin: 0 0 0.35rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-main h1 span {
+      color: var(--accent);
+    }
+
+    .hero-main p {
+      margin: 0.15rem 0 0.8rem;
+      font-size: 0.9rem;
+      color: #e5e7eb;
+      max-width: 40rem;
+    }
+
+    .hero-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.14rem 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.78);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35);
+    }
+
+    .badge-soft {
+      border-color: rgba(34, 197, 94, 0.6);
+      background: var(--accent-soft);
+      color: #bbf7d0;
+    }
+
+    .hero-note {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      padding: 0.65rem 0.75rem;
+      border-radius: 0.9rem;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px dashed rgba(148, 163, 184, 0.45);
+    }
+
+    .hero-note strong {
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .hero-side {
+      border-radius: 1.1rem;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 0.85rem 0.9rem 0.95rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-side-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #cbd5f5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hero-side-title span {
+      font-size: 0.67rem;
+      font-weight: 500;
+      text-transform: none;
+      color: var(--text-muted);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .chip {
+      font-size: 0.7rem;
+      padding: 0.14rem 0.55rem;
+      border-radius: 999px;
+      background: var(--chip-bg);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .chip.primary {
+      background: rgba(34, 197, 94, 0.14);
+      color: #bbf7d0;
+      border-color: rgba(34, 197, 94, 0.65);
+    }
+
+    .chip.warn {
+      background: rgba(248, 113, 113, 0.12);
+      color: #fecaca;
+      border-color: rgba(248, 113, 113, 0.6);
+    }
+
+    .hero-mini-flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.2rem;
+    }
+
+    .mini-step {
+      border-radius: 0.8rem;
+      padding: 0.4rem 0.45rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.7rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+    }
+
+    .mini-step-label {
+      font-size: 0.66rem;
+      color: var(--text-muted);
+    }
+
+    .mini-step-main {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .mini-step-main span {
+      color: var(--accent);
+    }
+
+    .mini-step-extra {
+      font-size: 0.66rem;
+      color: var(--text-muted);
+    }
+
+    main {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    section {
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1.15rem 1.1rem 1.2rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    section h2 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-tagline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .pill {
+      font-size: 0.68rem;
+      padding: 0.12rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.18);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+
+    /* Quick algorithm */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .callout {
+      border-radius: 0.9rem;
+      border: 1px dashed rgba(148, 163, 184, 0.35);
+      padding: 0.7rem 0.8rem;
+      font-size: 0.8rem;
+      background: rgba(15, 23, 42, 0.94);
+    }
+
+    .callout strong {
+      color: #e5e7eb;
+    }
+
+    .checklist {
+      list-style: none;
+      margin: 0.2rem 0 0;
+      padding: 0;
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .checklist li::before {
+      content: "•";
+      color: var(--accent);
+      margin-right: 0.45rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.25rem;
+    }
+
+    .pill-soft {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text-muted);
+    }
+
+    /* Flow chart */
+    .flow-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+      gap: 1.1rem;
+      align-items: flex-start;
+    }
+
+    .flow-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .flow-step {
+      position: relative;
+      border-radius: 0.95rem;
+      padding: 0.68rem 0.78rem;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      font-size: 0.8rem;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.55rem;
+      align-items: flex-start;
+    }
+
+    .flow-step-number {
+      width: 1.4rem;
+      height: 1.4rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.18);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.6);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .flow-step-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .flow-step-title {
+      font-weight: 500;
+      font-size: 0.83rem;
+    }
+
+    .flow-step-body {
+      font-size: 0.77rem;
+      color: var(--text-muted);
+    }
+
+    .flow-branch-grid {
+      margin-top: 0.4rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.45rem;
+    }
+
+    .flow-branch {
+      border-radius: 0.7rem;
+      padding: 0.42rem 0.5rem;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.76rem;
+    }
+
+    .flow-branch strong {
+      color: #e5e7eb;
+    }
+
+    .flow-hint {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .flow-side-note {
+      border-radius: 0.9rem;
+      padding: 0.65rem 0.75rem;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      font-size: 0.78rem;
+    }
+
+    .flow-side-note h3 {
+      margin: 0 0 0.35rem;
+      font-size: 0.82rem;
+      color: #bae6fd;
+    }
+
+    /* IHC table */
+    .table-wrapper {
+      border-radius: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.98));
+      overflow: auto;
+      padding: 0.45rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+      min-width: 640px;
+    }
+
+    th, td {
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.9);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: rgba(15, 23, 42, 0.97);
+      font-weight: 600;
+      color: #d1d5db;
+      z-index: 1;
+    }
+
+    td:first-child, th:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      background: rgba(15, 23, 42, 0.97);
+      z-index: 2;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    tr:nth-child(odd) td {
+      background: rgba(15, 23, 42, 0.94);
+    }
+
+    .ihc-pos {
+      color: #bbf7d0;
+      font-weight: 500;
+    }
+
+    .ihc-neg {
+      color: #fecaca;
+      font-weight: 500;
+    }
+
+    .ihc-var {
+      color: #fde68a;
+      font-weight: 500;
+    }
+
+    .ihc-note {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.45rem;
+    }
+
+    /* Entity cards */
+    .entity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .entity-card {
+      border-radius: 1rem;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 0.75rem 0.8rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .entity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .entity-name {
+      font-size: 0.95rem;
+      font-weight: 560;
+    }
+
+    .entity-label {
+      font-size: 0.7rem;
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--text-muted);
+    }
+
+    .entity-label.benign {
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.6);
+      color: #bbf7d0;
+    }
+
+    .entity-label.malign {
+      background: rgba(248, 113, 113, 0.16);
+      border-color: rgba(248, 113, 113, 0.6);
+      color: #fecaca;
+    }
+
+    .entity-label.low {
+      background: rgba(56, 189, 248, 0.14);
+      border-color: rgba(56, 189, 248, 0.6);
+      color: #bae6fd;
+    }
+
+    .entity-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .entity-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.1fr);
+      gap: 0.6rem;
+    }
+
+    .entity-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.77rem;
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .entity-list li::before {
+      content: "–";
+      margin-right: 0.3rem;
+      color: var(--text-muted);
+    }
+
+    .entity-subtitle {
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .entity-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.1rem;
+    }
+
+    .entity-tag {
+      font-size: 0.65rem;
+      padding: 0.12rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+    }
+
+    details {
+      border-radius: 0.7rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.96);
+      padding: 0.45rem 0.55rem;
+      font-size: 0.76rem;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::before {
+      content: "▸";
+      display: inline-block;
+      margin-right: 0.3rem;
+      color: var(--accent2);
+    }
+
+    details[open] summary::before {
+      content: "▾";
+    }
+
+    details[open] {
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .refs {
+      list-style: none;
+      padding-left: 0;
+      margin: 0.3rem 0 0;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .refs li {
+      margin-bottom: 0.15rem;
+    }
+
+    footer {
+      margin-top: 1.5rem;
+      padding-top: 0.8rem;
+      border-top: 1px dashed rgba(148, 163, 184, 0.35);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    footer a {
+      color: var(--accent2);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-side {
+        order: -1;
+      }
+
+      .flow-wrapper,
+      .quick-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      section {
+        padding: 0.95rem 0.85rem 1rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        margin-top: 1.4rem;
+      }
+
+      .entity-body {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      table {
+        font-size: 0.74rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Renal Hücreli Karsinom Tanı Algoritması</h1>
-  <div id="path"><strong>Seçilen Kriterler:</strong><ul id="pathList"></ul></div>
-  <div id="content"></div>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo-dot"></div>
+        <div class="brand-text">
+          <div class="brand-title">Renal Onkositik Tümör Algoritması</div>
+          <div class="brand-subtitle">Morfoloji + İHK temelli, eğitim amaçlı referans</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#overview" class="nav-link">Genel Bakış</a>
+        <a href="#quick" class="nav-link">Hızlı Yaklaşım</a>
+        <a href="#flow" class="nav-link">Algoritma</a>
+        <a href="#ihc" class="nav-link">İHK Paneli</a>
+        <a href="#entities" class="nav-link">Tümörler</a>
+        <a href="#refs" class="nav-link">Kaynaklar</a>
+      </nav>
+    </div>
+  </header>
 
-  <script>
-    // Final diagnosis data objects
-    const finalClearCell = {
-      diagnosis: "Konvansiyonel (ClearHücreli) Renal Hücreli Karsinom",
-      info: {
-        morphology: "Berrak (şeffaf) veya granüler sitoplazmalı hücreler, alveoler/nested büyüme paterninde; ince kılcal damar ağları tümör içinde belirgindir. Düşük dereceli alanlarda hücreler tipik olarak şeffaf, yüksek dereceli odaklarda ise sitoplazma daha eozinofilik olabilir. Nekroz ve sarcomatoid/rabdoid dönüşüm gelişebilir.",
-        differential: `<ul>
-<li><strong>Clearhücreli papiller RHK:</strong> Düşük dereceli berrak hücreler ve tubülopapiller yapılar; CK7 difüz pozitif, CAIX membran boyanması <em>cup-like</em> (apikal yüzey açık) şeklindedir.</li>
-<li><strong>Kromofob RHK:</strong> Hücre membranları kalın, perinükleer halo belirgin, sitoplazma soluk-eozinofilik; CK7 difüz pozitiftir (Clearhücrelide genelde negatif).</li>
-<li><strong>Xp11 translokasyonlu RHK:</strong> Genç hastada papiller yapılar, berrak & eozinofilik hücre karışımı ve psammom cisimcikleri ile kendini gösterir; TFE3 immünboyası pozitiftir.</li>
-</ul>`,
-        immuno: "CAIX difüz ve komple membranöz olarak güçlü pozitif; CD10 ve vimentin sıklıkla pozitiftir. CK7 tipik olarak negatiftir (yalnızca yüksek dereceli odaklarda fokal pozitif olabilir).",
-        molecular: "Hemen tüm vakalarda 3p kromozom kaybı ve VHL tümör süpresör gen inaktivasyonu mevcuttur. Sporadik olgular somatik VHL mutasyonu taşırken, ailesel Von Hippel-Lindau sendromu olguları germline VHL mutasyonu içerir.",
-        prognosis: "Clearhücreli RCC en agresif seyirli alt tiplerden biridir; tümörün derecesi, evresi, nekroz ve sarkomatoid farklılaşma varlığı prognozu belirler. Lokalize hastalığın yaklaşık %30’unda nüks/metastaz gelişir. Sarkomatoid veya rabdoid değişim varsa prognoz son derece kötüdür.",
-        report: "Morfolojik ve immunohistokimyasal bulgular, Clearhücreli (konvansiyonel) renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalMultilocular = {
-      diagnosis: "Multiloküler Kistik (Düşük Malign Potansiyelli) Neoplazm",
-      info: {
-        morphology: "Tamamen çok sayıda kistik boşluk ve ince fibröz septalardan oluşan, septaları boyunca düşük dereceli berrak hücreler içeren bir tümördür. Solid ekspansif nodüler büyüme odakları yoktur. Makroskopik olarak çok odacıklı kistik kitle şeklindedir.",
-        differential: `<ul>
-<li><strong>Clearhücreli RCC (kistik değişimli):</strong> Eğer belirgin solid kitle alanları varsa konvansiyonel Clearhücreli RCC olarak değerlendirilmelidir.</li>
-<li><strong>Edinsel kistik hastalık ilişkili RCC:</strong> Multiloküler lezyon genelde sporadik böbrekte görülürken, diyaliz hastalarında ortaya çıkan edinsel kistik RCC kitleleri mikrokistik patern ve kristal birikimi gibi farklı özellikler gösterir.</li>
-<li><strong>Kistik Nefroma:</strong> Septalarda blastemal komponent olmayan benign çok odacıklı kistik lezyondur; erişkin tipi kistik nefroma ile multiloküler kistik RCC ayrımı için tümör septalarında berrak hücre varlığı kritik önemdedir.</li>
-</ul>`,
-        immuno: "Clearhücreli RCC ile benzer immunofenotipe sahiptir (örneğin CAIX, CD10 pozitif; CK7 genellikle negatif). Yüksek dereceli komponent olmadığından ayırıcı tanıda IHK genellikle gerekmez.",
-        molecular: "Clearhücreli RCC’nin moleküler özelliklerini taşır (3p delesyonu, VHL mutasyonu). “Düşük malign potansiyelli” olarak adlandırılır, çünkü bu tümörlerde agresif genetik değişimler minimaldir.",
-        prognosis: "Pratikte malign davranış göstermez; şimdiye dek metastaz bildirilmemiştir. Tam rezeksiyon ile kür elde edilir. WHO 2016 sınıflamasında malign değil, “düşük malign potansiyelli neoplazm” olarak tanımlanmıştır.",
-        report: "Tümör, multiloküler kistik renal neoplazm (düşük malign potansiyelli) tanımı ile uyumludur."
-      }
-    };
-    const finalPapillary1 = {
-      diagnosis: "Papiller Renal Hücreli Karsinom, Tip 1",
-      info: {
-        morphology: "İnce fibro-vasküler çekirdekli papiller yapılar; bu yapıları örten hücreler tek sıra halinde küçük kübik hücrelerdir. Sitoplazmaları soluk (bazofilik) olup çekirdekleri küçük ve belirgin nükleol içermez (WHO/ISUP grade 1-2). Papilla eksenlerinde köpüksü makrofajlar ve psammom cisimcikleri sık görülür. Tümör tipik olarak psödokapsül ile çevrilidir.",
-        differential: `<ul>
-<li><strong>Papiller adenom:</strong> ≤15 mm boyutlu, kapsülsüz, düşük dereceli papiller yapı gösteren benign odaklar; tip 1 papiller RCC ile mikroskobik olarak aynıdır, sadece boyut ve kapsül varlığı ile ayrılır.</li>
-<li><strong>Metanefrik adenom:</strong> Genellikle küçük tubüler/papiller yapılar ve uniform küçük hücrelerden oluşan benign bir tümör; papiller RCC’ye benzer ancak WT1 (+) ve CK7 (-) immünprofiliyle ayrılır, ayrıca BRAF V600E mutasyonu taşır.</li>
-<li><strong>Müsinöz tubüler iğsi karsinom:</strong> Papiller yapıya ek olarak iğsi hücreli alanlar ve müsinöz stroma içerir; tip 1 papiller RCC’den iğsi komponent varlığı ile ayrılır.</li>
-</ul>`,
-        immuno: "CK7 difüz ve güçlü pozitiftir; AMACR (P504S) de tipik olarak pozitiftir. CD10 sıklıkla pozitiftir. TFE3 negatif (Xp11 translokasyon olmadığını gösterir).",
-        molecular: "Kromozom 7 ve 17 trizomileri ve Y kromozomu kaybı karakteristiktir. MET proto-onkogeninde aktifleştirici mutasyonlar saptanabilir (sporadik vakalarda); ailesel papiller RCC (MET germline mutasyonu) sendromunda multiple bilateral tümörler görülür.",
-        prognosis: "Tip 1 papiller RCC genellikle düşük dereceli ve yavaş seyirlidir. Prognozu tip 2 papiller alt tipine göre daha iyidir; lokalize vakalarda 5-yıllık sağkalım oranları yüksektir.",
-        report: "Morfolojik ve immunohistokimyasal bulgular, papiller renal hücreli karsinom (Tip 1) tanısı ile uyumludur."
-      }
-    };
-    const finalPapillary2 = {
-      diagnosis: "Papiller Renal Hücreli Karsinom, Tip 2",
-      info: {
-        morphology: "Papiller yapılar belirgindir ancak tümörü örten hücreler birden fazla sıra halinde (psödostratifiye) dizilir. Hücre sitoplazmaları volüminöz eosinofilik/onkositik görünümdedir ve çekirdekler belirgin nükleollüdür (WHO/ISUP grade 3-4). Tip 2 morfoloji heterojen olabilir; bazı bölgelerde solid alanlar, yüksek mitotik aktivite ve nekroz görülebilir.",
-        differential: `<ul>
-<li><strong>FH-eksik RCC (HLRCC):</strong> Tip 2 papiller paterne çok benzer; ancak nükleoller “viral inklüzyon” benzeri aşırı belirgin ve perinükleer halo olabilir, ayrıca klinik olarak agresiftir. FH immün boyası ile ayırt edilir (FH kaybı).</li>
-<li><strong>Onkositik papiller neoplazm (ters polarite):</strong> Düşük dereceli, ince dallanan papilla yapıları tek sıra onkositik hücreler ile döşelidir, nükleusları apikalde sıralanır. GATA3 pozitiftir ve KRAS mutasyonları bulunur (yeni tanımlanan varyant).</li>
-<li><strong>Toplayıcı kanal karsinomu:</strong> Bazı yüksek dereceli papiller RCC’ler, Bellini kanal karsinomunu taklit edebilir; ancak Bellini tümörü belirgin desmoplastik stroma ve infiltre büyüme gösterir, papiller yapılar yaygın değildir.</li>
-</ul>`,
-        immuno: "CK7 genelde pozitiftir ancak mozaik bir dağılım gösterebilir (bazı odaClearnegatif kalabilir). AMACR (P504S) çoğu vakada pozitiftir. FH eksikliği şüphesi varsa FH ve 2SC (süksinil-kistein) boyaları yapılmalı; FH-eksik tümörde tümör hücrelerinde boyanma kaybı görülür.",
-        molecular: "Genetik olarak heterojendir; tip 2 tanımlı spesifik tek bir gen mutasyonu olmamakla birlikte CDKN2A/B delesyonları, SETD2 mutasyonları veya MI/TFE gen anormallikleri bildirilmiştir. HLRCC sendromlu olgularda FH mutasyonu saptanır.",
-        prognosis: "Tip 2 papiller RCC, tip 1’e göre daha kötü prognoza sahiptir. Yüksek nükleer grade ve ileri evre varlığında sağkalım belirgin şekilde düşüktür. Birçok vakada agresif klinik seyir izler.",
-        report: "Morfolojik bulgular, papiller renal hücreli karsinom (Tip 2) tanısını desteklemektedir (FH eksikliği açısından gerekli testler yapılmıştır)."
-      }
-    };
-    const finalFHdef = {
-      diagnosis: "FH-Eksik (HLRCC İlişkili) Renal Hücreli Karsinom",
-      info: {
-        morphology: "Genellikle yüksek dereceli, değişken morfoloji sunan bir karsinomdur. Sıklıkla papiller (tip 2 benzeri) yapı görülür; hücreler bol eosinofilik sitoplazmalı, çekirdeklerinde çok belirgin inklüzyon benzeri nükleoller ve etrafında halo izlenebilir. Aynı tümörde solid, tubüler, kistik, invaziv glandüler paternler bir arada bulunabilir. Yaygın koagülasyon nekrozu tipiktir.",
-        differential: `<ul>
-<li><strong>Tip 2 Papiller RCC:</strong> Eğer FH immünboyası pozitif (normal) ise, böyle yüksek dereceli papiller tümörler tip 2 papiller RCC olarak rapor edilir; bu olgular genelde FH-mutant tümöre kıyasla daha az agresiftir.</li>
-<li><strong>Toplayıcı kanal karsinomu:</strong> FH-eksik RCC, Bellini kanalı karsinomunu andırabilir; ayrım için hasta öyküsü (leiomyom varlığı) ve FH/2SC immünboyamaları yapılır. Kollektör kanal ca’da FH kaybı olmaz.</li>
-<li><strong>Sınıflandırılamayan RCC:</strong> Hiçbir alt tipe uymayan yüksek dereceli bir RCC tanısı koymadan önce FH boyası yapılmalıdır; özellikle genç hastalarda ve alışılmadık morfolojilerde FH mutasyonunu dışlamak önemlidir.</li>
-</ul>`,
-        immuno: "Fumarat hidrataz (FH) immünhistokimyasında tümör hücrelerinde sitoplazmik boyanma kaybı saptanır (çevre normal dokuda pozitif iç kontrol bulunur). Ayrıca 2SC boyası (birikim sonucu) tümör hücrelerinde pozitif olur. CK7, AMACR gibi markerlar değişkenlik gösterebilir; tanıda bu panellerden ziyade FH/2SC kritik önemdedir.",
-        molecular: "FH gen mutasyonu mevcuttur. Hereditary Leiomyomatosis and RCC (HLRCC) sendromu olan hastalarda germline FH mutasyonu vardır; sporadik olgularda somatik mutasyon görülür. Bu hastalarda deri ve uterin leiomyom öyküsü olabilir.",
-        prognosis: "Çok agresif seyirlidir. Tanı anında çoğunlukla metastatik olup, ortalama sağkalım birkaç yıldan kısadır. Bu tümörlerin erken yaşta ortaya çıkabilmesi nedeniyle genç hastalarda yüksek dereceli RCC görüldüğünde FH eksikliği akla gelmelidir.",
-        report: "Morfoloji ve immünofenotip, FH eksikliği ile ilişkili renal hücreli karsinom (HLRCC ile ilişkili RCC) tanısını desteklemektedir. (Not: Hastada HLRCC sendromu yönünden klinik değerlendirme önerilir.)"
-      }
-    };
-    const finalXp11 = {
-      diagnosis: "Xp11 Translokasyonlu (TFE3+) Renal Hücreli Karsinom",
-      info: {
-        morphology: "Papiller yapılar belirgindir. Papilla yüzeylerini döşeyen hücreler epiteloid olup sitoplazmaları berrak veya eozinofilik renktedir; çekirdek atipisi belirgin olabilir. Papiller fibro-vasküler çekirdeklerde bol psammom cisimcikleri tipiktir. Bazı tümörlerde miks morfoloji görülür (Clearhücreli alanlar, kistik odaklar, solid yuvalanmalar). Genellikle çocuClearve genç erişkinlerde ortaya çıkar. Sıklıkla bölgesel lenf nodu metastazı ile prezente olsa da, bu metastazlar prognozu belirgin etkilemez.",
-        differential: `<ul>
-<li><strong>Clearhücreli RCC:</strong> Xp11 tümörü berrak hücreli görünüme sahip olsa bile CAIX boyaması tipik değildir (diffüz tam membranöz değil). Ayrıca hastanın genç olması ve psammoma varlığı Xp11 lehine ipucudur.</li>
-<li><strong>Papiller RCC:</strong> TFE3 gen füzyonu varlığı ancak immüno/FISH ile gösterilebilir; şüpheli durumlarda TFE3 boyası yapılmalıdır. Papiller RCC genelde daha yaşlı hastada çıkar ve TFE3 negatiftir.</li>
-<li><strong>Epiteloid anjiyomiyolipom:</strong> Hem Xp11 RCC hem epiteloid AML, epiteloid hücreler ve psammoma içerebilir. AML’de melanistik markerlar (HMB-45, Melan-A) yaygın pozitiftir ve PAX8 negatiftir; Xp11 RCC’de PAX8 pozitiftir ve melanistik markerlar sadece fokaldir.</li>
-</ul>`,
-        immuno: "TFE3 protein immünhistokimyası (%100 spesifik olmamakla birlikte) genelde nükleer pozitiflik gösterir. Pan-sitokeratinler negatif veya odaksal zayıf pozitif olabilir. Melan-A, HMB-45 yaklaşık %20-40 olguda fokal pozitiftir; cathepsin K sıklıkla pozitiftir. CAIX boyası negatif veya fokaldir (Clearhücreli RCC’den ayırmada).",
-        molecular: "Xp11.2 bölgesinde TFE3 genini içeren çeşitli translokasyonlar söz konusudur (ör: ASPL-TFE3 füzyonu). Kesin tanı için TFE3 break-apart FISH testi yapılabilir. MiT familyası translokasyonları olarak adlandırılan grubun bir parçasıdır.",
-        prognosis: "Genel sağkalım, eşdeğer evre/derecedeki Clearhücreli RCC’ye yakındır. Çocuk ve gençlerde görülebilir. Metastatik tutulum yaygın olsa da, cerrahi rezeksiyon sonrası uzun süreli remisyonlar görülebilir.",
-        report: "Morfolojik ve immünohistokimyasal bulgular, Xp11 translokasyonlu (TFE3 füzyonlu) renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalTFEB = {
-      diagnosis: "t(6;11) Translokasyonlu (TFEB+) Renal Hücreli Karsinom",
-      info: {
-        morphology: "Tipik olarak bifazik bir histoloji izlenir: Büyük eozinofilik epiteloid hücreler geniş yuva ve nodüllerin periferinde yer alırken, küçük yuvarlak hücreler bu nodüllerin merkezinde bazal membran benzeri matriks globüllerinin çevresinde toplanır. Bazı vakalarda papiller, tubülokistik, berrak hücreli veya onkositik alanlar da görülerek tümör heterojenlik gösterebilir. Çoğunlukla çocukluk veya genç erişkin çağda ortaya çıkar.",
-        differential: `<ul>
-<li><strong>Xp11 Translokasyon RCC:</strong> Papiller psammomatöz yapı Xp11’de belirginken, t(6;11) RCC’de bifazik (büyük/küçük hücreli) yapı daha tipiktir. Ayırım için TFE3 ve TFEB FISH testleri kullanılır.</li>
-<li><strong>Epiteloid AML:</strong> Büyük epiteloid hücreler ve perivasküler düzenlenme benzerlik gösterebilir; ancak epiteloid AML’de tümör diffüz HMB-45/Melan-A pozitif, PAX8 negatiftir. TFEB translokasyon RCC ise kısmi melanistik marker pozitifliği ve değişken PAX8 ile ayrılır.</li>
-<li><strong>Onkositom / Kromofob RCC:</strong> TFEB tümörleri onkositik hücreler içerse de belirgin bifazik düzen ve bazal membran globülleri bu benign/malign onkositik tümörlerde görülmez.</li>
-</ul>`,
-        immuno: "TFEB immünohistokimyası ile nükleer boyanma gösterebilir (her vakada olmayabilir); kesin tanı için TFEB break-apart FISH önerilir. Olguların ~50%’inde melanotik markerlar (HMB-45, Melan-A) ve cathepsin K pozitiftir. PAX8 ekspresyonu değişkendir (yaklaşık yarısında negatiftir). Sitokeratinler çoğunlukla negatif veya minimal pozitiftir.",
-        molecular: "6. kromozomda TFEB genini içeren füzyon mevcuttur (örn. MALAT1-TFEB füzyonu). MiT familyası translokasyonlu RCC grubundadır. Genç hastalarda düşünülmelidir. TFEB break-apart FISH veya immünboyama ile tanı konulur.",
-        prognosis: "Göreceli olarak indolent bir tümördür. Az sayıda metastaz bildirilmiştir; lokalize olgularda cerrahi ile uzun süreli sağkalım yaygındır. Genel olarak Xp11’e kıyasla daha iyi prognoz seyrettiği kabul edilir.",
-        report: "Morfolojik ve immünohistokimyasal bulgular, TFEB (t(6;11)) translokasyonlu renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalChromophobe = {
-      diagnosis: "Kromofob Renal Hücreli Karsinom",
-      info: {
-        morphology: "Solid sheet ve geniş alveolar yapı düzeni gösterir. Hücreler büyük poligonal ve soluk eozinofilik veya hafif bazofilik sitoplazmalıdır. Hücre sınırları kalın ve belirgindir, çoğu hücrede belirgin perinükleer halo bulunur. Çekirdek konturları irregüler ve “büzüşmüş” (raisinoid) görünümdedir. Bazı odaklarda onkositoma-benzeri yoğun eosinofilik hücre grupları (eozinofilik varyant) da bulunabilir.",
-        differential: `<ul>
-<li><strong>Onkositom:</strong> Benign; hücreleri daha küçük ve uniform, perinükleer halo tipik değildir. Onkositomada CK7 boyası negatiftir (yalnızca nadir hücreler boyanır), kromofobda ise difüz pozitiftir.</li>
-<li><strong>Clearhücreli RCC:</strong> Sitoplazma diffüz şeffaf değildir, CAIX boyanmaz; kromofob RCC genellikle daha düşük dereceli nüve yapısına sahiptir. Ayrıca Clearhücrelide tipik kılcal damar ağı kromofobda izlenmez.</li>
-<li><strong>SDH eksik RCC:</strong> Kromofob tipi görünüm verebilir ancak SDHB immün boyaması tümör hücrelerinde kayıptır (kromofob RCC’de pozitif). Ayrıca SDH tümörleri kromofob RCC’deki tipik yaygın kromozom kayıplarını taşımaz.</li>
-</ul>`,
-        immuno: "Sitokeratin 7 (CK7) neredeyse tüm hücrelerde (difüz) pozitiftir. KIT (CD117) çoğu vakada pozitiftir. RCC Marker (antijen) fokal pozitif olabilir. Vimentin negatiftir (Clearhücreli RCC’nin aksine).",
-        molecular: "Yaygın kromozomal monosomiler tipiktir (1, 2, 6, 10, 13, 17 ve 21 kayıpları). Birt-Hogg-Dubé sendromlu hastalarda kromofob RCC ve onkositom birlikte (hibrit tümörler) görülebilir; bu olgularda FLCN (folikulin) gen mutasyonu bulunur.",
-        prognosis: "Kromofob RCC, Clearhücreli ve papiller tiplere göre daha indolent seyreder. Metastatik hastalık oranı düşüktür (~%5). Not: Kromofob RCC’de nükleer grade (Fuhrman/ISUP) uygulanmaz, raporlanması önerilmez.",
-        report: "Morfoloji ve IHK bulguları, kromofob renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalOncocytoma = {
-      diagnosis: "Onkositom (Benign Renal Onkositik Tümör)",
-      info: {
-        morphology: "Uniform, yuvarlak/poligonal onkositik hücrelerden oluşur. Tümör hücreleri bol granüler eozinofilik sitoplazmaya ve merkezi, monoton, küçük çekirdeklere sahiptir (belirgin nükleol yok). Büyüme paterni solid tabakalar, adacıClearveya tubüller şeklindedir. Çoğu onkositom makroskopik merkezi fibrotik bir skar içerir.",
-        differential: `<ul>
-<li><strong>Kromofob RCC (eozinofilik varyant):</strong> Malign; hücrelerde belirgin nükleer pleomorfizm ve perinükleer halo bulunur. Kromofobda CK7 difüz pozitiftir, onkositomada ise negatif veya sadece odağandır.</li>
-<li><strong>“Low-grade” onkositik tümör (HOCT/LOT):</strong> Kromofob RCC ve onkositom arası özellikler gösteren yeni tanımlanan indolen renal tümörlerdir; ayırımı için geniş immün panel (CK7, KIT, v.b.) ve moleküler analiz gerekebilir.</li>
-</ul>`,
-        immuno: "CK7 negatiftir veya yalnızca tek tük hücrelerde pozitiftir. KIT (CD117) pozitiftir (kromofob RCC’de de pozitiftir). SDHB immün boyaması normal (pozitif) izlenir; SDH yetersiz RCC’den bu şekilde ayrılır.",
-        molecular: "En sık izlenen genetik değişiklik, erkek hastalarda Y kromozomu kaybıdır. Ayrıca kromozom 1 ve 14 kayıpları rapor edilmiştir. Kromofob RCC’deki yaygın çoklu kromozom kayıpları onkositomada görülmez. Birt-Hogg-Dubé sendromunda multipl onkositomlar görülebilir.",
-        prognosis: "Tamamen benign bir tümördür. Metastaz yapmaz. Cerrahi rezeksiyonla kür sağlanır; bu nedenle ayırıcı tanıda malign tümörler dışlanınca “onkositom” tanısı verilir.",
-        report: "Morfolojik ve immünohistokimyasal bulgular, onkositom ile uyumludur (benign renal onkositik neoplazm)."
-      }
-    };
-    const finalSDH = {
-      diagnosis: "SDH Eksikliği ile İlişkili Renal Hücreli Karsinom",
-      info: {
-        morphology: "Solid alanlardan oluşan, eozinofilik-onkositik sitoplazmalı hücreler içerir. Hücre sitoplazması ince granüllü veya flokülan (bulanık) görünümdedir ve fokal vakuoller barındırabilir. Kromofob RCC’yi andırabilir ancak belirgin perinükleer halo veya kalın hücre membranı tipik değildir. Genellikle düşük-orta derece nükleer yapısı vardır.",
-        differential: `<ul>
-<li><strong>Kromofob RCC:</strong> Morfolojik benzerlik gösterir; ayırım için SDHB immün boyaması yapılır. Kromofob RCC’de CK7 difüz pozitiftir, SDH eksik RCC’de CK7 çoğunlukla negatiftir.</li>
-<li><strong>Onkositom:</strong> Benign onkositik tümördür; immun fenotipi benzer olsa da SDHB boyası onkositomda normal pozitiftir (SDH tümöründe kayıp). Ayrıca onkositomda perinükleer halo görülmez.</li>
-<li><strong>Eozinofilik solid kistik RCC (ESC):</strong> TSC1/2 mutasyonları ile ilişkili yeni tanımlanan bir tümördür; benzer onkositik görünüm olabilir ancak diffüz CYFRA+/CK20+ immunprofiliyle ayrılır. SDHB kaybı yoktur.</li>
-</ul>`,
-        immuno: "Mitokondriyal SDHB proteini immün boyamada tümör hücrelerinde kayıp gösterir (çevre dokuda pozitif boyanır). Bu bulgu tanısaldır. Kromofob/onkositom ayrımı için CK7 ve KIT boyaları da kullanılabilir: SDH tümörü CK7(–/fokal), KIT(+) bir profildedir. PAX8 genellikle pozitiftir.",
-        molecular: "SDHB, SDHC veya SDHD genlerindeki germline mutasyonlarla ilişkilidir. Bu sendromik mutasyonlar ayrıca paraganglioma, feokromositoma ve GIST tümörlerini de içerir. Dolayısıyla hastaların bu tümör öyküleri sorgulanmalıdır.",
-        prognosis: "Oldukça indolent seyirli kabul edilir. Metastaz nadir görülür ve genellikle uzun yıllar sonra ortaya çıkar. Düşük dereceli tümörlerdir; cerrahi ile yüksek oranda kür elde edilir.",
-        report: "Morfolojik ve immunohistokimyasal bulgular, SDH eksikliği ile ilişkili (SDH-deficient) renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalCollecting = {
-      diagnosis: "Toplayıcı Kanal (Bellini Duktus) Karsinomu",
-      info: {
-        morphology: "Böbreğin papilla/medulla bölgesinden kaynaklanan yüksek dereceli adenokarsinomdur. Küçük düktus benzeri yapılar ve glandüler formasyonlar geniş desmoplastik fibrotik stroma içinde hüzmeler halinde dağılır. Belirgin nükleer atipi, mitoz ve yaygın nekroz izlenir. Tümör, infiltratif bir büyüme paterni ile çevre böbrek dokusunu işgal eder.",
-        differential: `<ul>
-<li><strong>Renal medüller karsinom:</strong> Sickle-cell taşıyıcılarında görülen, toplayıcı kanaldan köken alan bir varyanttır; histolojik olarak büyük ölçüde benzerdir. Ancak medüller karsinomda hasta genellikle gençtir ve orak hücre anamnezi pozitiftir.</li>
-<li><strong>Ürotelyal karsinom (pelvis):</strong> Pelvikalis sistemi tutan yüksek dereceli ürotelyal tümörler Bellini karsinomunu taklit edebilir. PAX8 pozitifliği renal karsinom lehinedir; ürotelyal markerlar (GATA3, p63) Bellini'de negatif, ürotelyal kanserde pozitiftir.</li>
-<li><strong>FH-eksik RCC:</strong> Bazı FH-mutant karsinomlar toplayıcı kanalı andırabilir. Ayırıcı tanıda FH/2SC boyaları ve hastanın leiomyom öyküsü dikkate alınır.</li>
-</ul>`,
-        immuno: "PAX8 pozitiftir (renal tübüler orijini gösterir). CK7, CK19 ve EMA genellikle pozitiftir. Yüksek molekül ağırlıklı CK (34βE12) sıklıkla pozitiftir (distal nefron orijinini destekler). GATA3, CK20, Thrombomodulin gibi ürotelyal markerlar negatiftir.",
-        molecular: "Belirgin bir karakteristik genetik mutasyon yoktur. Bazı çalışmalarda MYC onkogen amplifikasyonu saptanmıştır. Genellikle sporadik ortaya çıkar; orak hücre ile ilişkili değildir (medüller karsinom hariç).",
-        prognosis: "Çok kötü prognozludur. Tanı anında çoğunlukla ileri evre (böbrek dışına taşmış veya metastatik) olup, 5-yıllık sağkalım oranı düşüktür. Neoadjuvan veya hedefe yönelik tedaviler sınırlı yanıt vermektedir.",
-        report: "Morfoloji ve IHK bulguları, toplayıcı kanal (Bellini duktus) karsinomu ile uyumludur."
-      }
-    };
-    const finalMedullary = {
-      diagnosis: "Renal Medüller Karsinom",
-      info: {
-        morphology: "Böbrek medullasında, genellikle genç yaş Afro-Amerikan hastalarda ve hemen her zaman orak hücre taşıyıcılığı (HbAS) öyküsü ile ortaya çıkar. Histolojik olarak yaygın infiltre büyüyen, pleomorfik, anaplastik tümör hücreleri görülür. Adenokarsinom veya yassılaşan hücre alanları olabilir; belirgin desmoplastik stromal reaksiyon vardır. Yaygın nekroz ve sık mitoz izlenir. Rhabdoid hücre değişimi (eksantrik çekirdekli, eozinofilik inklüzyonlu hücreler) karakteristiktir.",
-        differential: `<ul>
-<li><strong>Toplayıcı kanal karsinomu:</strong> Medüller karsinom, toplayıcı kanal karsinomunun orak hücreli hastalardaki varyantı kabul edilir. Klinik bağlam (genç hasta, HbAS pozitifliği) ile ayrılır; histolojik olarak büyük benzerlik vardır.</li>
-<li><strong>Rabdoid böbrek tümörü:</strong> Pediatrik bir malignitedir; SMARCB1 (INI1) kaybı ile karakterizedir. Renal medüller karsinomda da çoğunlukla INI1 kaybı görülür, bu iki tümör genetik ve morfolojik olarak örtüşür (bazıları medüller Ca’yı erişkin rabdoid tümör olarak kabul eder).</li>
-<li><strong>Metastatik karsinomlar:</strong> Özellikle genç hastada, böbrek dışı bir primerin metastazı ekarte edilmelidir. Medüller Ca’da PAX8 genellikle pozitiftir, bu da primer renal olduğunu destekler.</li>
-</ul>`,
-        immuno: "PAX8 çoğu zaman pozitiftir (renal orijin). Pan-sitokeratinler ve EMA yaygın pozitiftir. SMARCB1 (INI1) protein boyası yaklaşık %95 vakada kayıp gösterir (rabdoid fenotip ile ilişkili). Ayrıca CD34 (endothel) pozitif geniş damarsı aralıCleargörülebilir.",
-        molecular: "Vakaların büyük kısmında heterozigot <em>HbS</em> mutasyonu (orak hücre taşıyıcılığı) vardır. SMARCB1/INI1 gen delesyonu veya mutasyonu ile ilişki saptanmıştır (rabdoid genetik yolak). Diğer spesifik sürücü mutasyonlar tanımlanmamıştır; genomik olarak yüksek derecede anöploiddir.",
-        prognosis: "Bilinen RCC alt tipleri içerisinde en kötü prognoza sahip olandır. Hastaların çoğu tanıyı takip eden bir-iki yıl içinde kaybedilir. Kemoterapi ve hedefe yönelik tedaviler genellikle etkisizdir.",
-        report: "Morfoloji ve immunofenotip, renal medüller karsinom ile uyumludur. (Not: Hastanın orak hücre taşıyıcılığı öyküsü ile korelasyon önerilir.)"
-      }
-    };
-    const finalMTSCC = {
-      diagnosis: "Müsinöz Tubüler ve İğsi Hücreli Karsinom (MTSCC)",
-      info: {
-        morphology: "Nadir görülen, düşük dereceli bir renal karsinomdur. Histolojide, gevşek müsinöz/myxoid stroma içerisinde kümeler halinde sık dizili küçük tubüller ve iğsi hücreli demetler görülür. Küboidal epitel ile döşeli sıkı tübüler yapılar bland görünümlü iğsi hücreli odaklara kademeli geçiş gösterir. Çekirdekler genellikle küçük ve nükleolleri belirsizdir. Bazı vakalarda fokal köpüksü makrofajlar veya minimal papiller yapılar olabilir.",
-        differential: `<ul>
-<li><strong>Tip 1 Papiller RCC:</strong> Özellikle solid veya iğsi alanları olan papiller RCC vakaları MTSCC ile karışabilir; ancak MTSCC’de tipik triad (müsinöz stroma, tubüller ve iğsi komponent) izlenir.</li>
-<li><strong>Metanefrik adenom:</strong> Yine küçük tubüler yapılar içeren benign tümör; iğsi komponent ve müsinöz stroma bulundurmaz, ayrıca WT1 (+) ve BRAF mutasyonlu olmasıyla ayrılır.</li>
-<li><strong>Onkositik papiller neoplazm:</strong> Ters polariteli papiller neoplazmlar MTSCC ile karışmaz; çünkü onlarda iğsi hücre yoktur ve GATA3 pozitiftir, MTSCC ise GATA3 negatif, CK7 pozitiftir.</li>
-</ul>`,
-        immuno: "CK7 difüz pozitiftir, AMACR (P504S) pozitiftir. Bu immunoprofil papiller RCC ile örtüştüğünden tanı için morfolojik kriterler esastır. Vimentin genelde negatif veya fokal pozitiftir (papiller RCC’de vimentin yaygın olabilir).",
-        molecular: "Çoklu kromozom kayıpları tipiktir (kayıp: 1, 4, 6, 8, 13, 14, 15, 22). Papiller RCC’deki ayırt edici bulgu olan trizomi 7 ve 17, MTSCC tümörlerinde saptanmaz, bu da farklı bir moleküler patogeneze işaret eder.",
-        prognosis: "Genellikle indolent seyirlidir. Saf MTSCC olgularında metastaz nadiren bildirilmiştir. Ancak çok seyrek de olsa yüksek dereceli (Fuhrman 3-4) nükleer özellik ve sarkomatoid değişim gelişebilir, bu durum prognozu kötüleştirir.",
-        report: "Morfoloji ve IHK bulguları, müsinöz tubüler ve iğsi hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalTubulocystic = {
-      diagnosis: "Tübülokistik Renal Hücreli Karsinom",
-      info: {
-        morphology: "Makroskopik olarak çok odacıklı kistik bir kitle şeklinde görülür. Mikroskopide küçük-orta kalibrede, düzensiz anastomoz yapmış tubüller ile zaman zaman bunların kistik genişlemelerinden oluşan bir yapı izlenir. Tümör hücreleri eozinofilik/onkositik sitoplazmalıdır ve nükleusları belirgin büyük nükleollüdür (ISUP grade 3). Yüksek nükleer grade’e rağmen genellikle monomorfik bir görünüm ve düşük proliferasyon hızı mevcuttur.",
-        differential: `<ul>
-<li><strong>FH-eksik RCC:</strong> Saf tubülokistik karsinom tanısı koymak için tüm odakların bu patern göstermesi gerekir. Eğer tümörde odaksal bile olsa solid yüksek dereceli alanlar varsa, FH-mutant RCC olarak değerlendirilmelidir (FH immüno boyası ile doğrulanır).</li>
-<li><strong>Multiloküler kistik RCC:</strong> Onda tüm kistik boşluClearberrak hücreli düşük dereceli epitel ile döşelidir; tubülokistik RCC’de ise hücreler onkositik ve nükleer dereceleri yüksektir.</li>
-<li><strong>Papiller RCC (Tip 2):</strong> Bazı tip 2 papiller RCC’ler mikrokistik görünebilir ancak genelde diffüz papilla formasyonları da vardır. Tubülokistik RCC’de belirgin papiller yapı olmamalıdır.</li>
-</ul>`,
-        immuno: "CK7 ve AMACR (P504S) genellikle pozitiftir (papiller RCC’ye benzer profil). Ancak saf tubülokistik karsinom tanısı morfolojiyle konur, immünpanel tanısal değildir. FH eksikliğini ekarte etmek için şüpheli durumlarda FH/2SC boyamaları yapılmalıdır.",
-        molecular: "Nadir görüldüğü için belirgin bir moleküler marker yoktur. Bazı vakaların FH-mutant RCC ile ilişkili olduğu (tümörün bir komponenti olduğu) bildirilmiştir. Saf olgularda genellikle indolen bir genetik profil gözlenir.",
-        prognosis: "Saf tubülokistik RCC, yüksek nükleer grade’ine rağmen indolen bir klinik seyir izler. Yaygın metastaz beklenmez. Ancak eğer tümör içerisinde az da olsa farklı (de-diferansiye) alanlar varsa agresif davranış gelişebilir; bu durumda tanıyı FH-eksik RCC olarak revize etmek gerekir.",
-        report: "Morfolojik ve immünohistokimyasal bulgular, tübülokistik renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalACKD = {
-      diagnosis: "Edinsel Kistik Hastalık (ACKD) İlişkili Renal Hücreli Karsinom",
-      info: {
-        morphology: "Son dönem böbrek yetmezliği ve uzun süreli diyaliz hastalarında, sıklıkla her iki böbrekte çok odaklı gelişen bir karsinomdur. Histolojisi heterojendir: aciner, alveoler, papiller, solid ve mikrokistik alanlar bir arada bulunur. En karakteristik bulgu, mikrokistik (süzgeç şeklinde) alanlarda lümenlerin kalsiyum oksalat kristalleri içermesidir. Tümör genellikle düşük-orta derecelidir ancak odaksal yüksek dereceli alanlar olabilir.",
-        differential: `<ul>
-<li><strong>Clearhücreli papiller RCC:</strong> Bu da kronik böbrek yetmezliği zemininde çıkabilir; ancak oksalat kristali birikimi göstermez ve immunofenotip olarak CK7(+), CAIX (cup-like) pozitif bir profile sahiptir.</li>
-<li><strong>Multiloküler kistik RCC:</strong> Edinsel kistik RCC’de solid alanlar ve heterojen paternler bulunur, multiloküler kistik neoplazm tamamen kistik ve berrak hücrelidir. Ayrıca ACKD ilişkili tümörde birden fazla odak olması tipiktir.</li>
-<li><strong>Papiller RCC (tip 1/2):</strong> ACKD zeminindeki RCC’lerin yarısı klasik papiller veya berrak hücreli alt tipte olabilir; ancak “ACKD-ilişkili RCC” tanısı, mikrokistik süngerimsi yapısı ve kristal varlığı olan spesifik morfolojiye sahip diğer yarısı için kullanılır.</li>
-</ul>`,
-        immuno: "Bu tanı, morfolojik ve klinik kontekst ile konur; immünohistokimya gerekmez. Tipik immünprofil: CK7 mozaik pozitif, AMACR mozaik pozitif, CAIX odaksal pozitif gibi değişken bir görünümdedir. Ayırıcı tanıda spesifik bir IHK deseni yoktur.",
-        molecular: "Kronik yetmezlik zemininde gelişen bu tümörler, sıklıkla kromozom 3, 6, 7 ve Y kazanımları gösterir. Bu, edinsel kistik RCC’ye özgü bir özellik olup diğer alt tiplerden ayırdedilebilir. Genellikle heterojen klonal populasyonlar içerir.",
-        prognosis: "Çoğu ACKD-ilişkili RCC indolen seyirlidir. Tümörler genelde küçüktür ve yavaş büyür. Ancak bazı olgularda sarkomatoid ya da rabdoid dönüşüm gelişirse agresif davranış mümkündür. Diyaliz hastalarının genel yaşam süresi üzerinde önemli bir etki yapmayabilir.",
-        report: "Morfolojik bulgular, edinsel kistik böbrek hastalığı ile ilişkili renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalClearPapillary = {
-      diagnosis: "ClearHücreli Papiller Renal Hücreli Karsinom",
-      info: {
-        morphology: "Düşük dereceli berrak sitoplazmalı hücreler tubüler ve papiller yapılarda düzenlenir. Papiller yapı varsa, hücre çekirdekleri karakteristik olarak apikal tarafta (lümen yüzüne yakın) dizilir, bazal membran tarafında hücre sitoplazması net bir boşluk olarak izlenir (piyano tuşu manzarası). Nekroz veya yüksek dereceli nükleer atipi yoktur.",
-        differential: `<ul>
-<li><strong>Clearhücreli (konvansiyonel) RCC:</strong> Nükleer dizilim bu kadar düzenli değildir ve CAIX boyası diffüz tamamını kaplar. Ayrıca Clearhücreli RCC genelde CK7 negatiftir (Clearhücreli papiller CK7 pozitiftir).</li>
-<li><strong>Papiller RCC (tip 1):</strong> Papiller RCC’de hücreler bazal çekirdekli ve daha bazofilik sitoplazmalıdır; immünprofilinde CK7(+) olsa da CAIX tipik olarak negatiftir. Clearhücreli papillerde CAIX “yarım ay” şeklinde boyanır, papiller RCC’de boyanmaz.</li>
-<li><strong>ACKD ilişkili RCC:</strong> Edinsel kistik hastalıkta da berrak hücreli papiller benzeri odaClearolabilir; ancak multipl odaklı ve oksalat kristalli olması ACKD lehine özelliklerdir. Clearhücreli papiller RCC sporadik vakalarda da görülür.</li>
-</ul>`,
-        immuno: "CK7 difüz pozitiftir. CAIX pozitiftir ancak boyanma paterni <em>cup-like</em> (bazal membranda şerit şeklinde, luminal yüzey açık kalır) şeklindedir. AMACR (P504S) negatiftir veya sadece zayıf odaksal pozitiflik gösterebilir.",
-        molecular: "Kromozom 3 delesyonu ve VHL mutasyonu yoktur (Clearhücreli RCC’den farkı). Moleküler olarak tipik anöploidi paterni içermez. Bazı vakalarda somatik TCEB1 mutasyonları bildirilmiştir. İndolen bir biyolojik davranışı vardır.",
-        prognosis: "Oldukça iyi seyirlidir. Hemen hiç metastaz bildirilmemiştir. Bu tümörün düşük malign potansiyelli olduğu düşünülür; uygun cerrahi tedaviyle nüks beklenmez.",
-        report: "Morfoloji ve IHK profili, Clearhücreli papiller renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalALK = {
-      diagnosis: "ALK Translokasyonlu Renal Hücreli Karsinom",
-      info: {
-        morphology: "Genellikle böbrek medullasında yerleşir ve bazı olgularda orak hücre taşıyıcılığı ile ilişkilidir. Histolojisi değişkendir; geniş poligonal epiteloid hücreler, iğsi sarkomatoid alanlar veya mikroglandüler yapılar bir arada olabilir. Bazı vakalarda müsinöz kribriform odacıClearve imza yüzüğü hücreleri görülebilir. Çekirdekler yüksek derecelidir ve sık mitoz gözlenir.",
-        differential: `<ul>
-<li><strong>Renal medüller karsinom:</strong> Histolojik olarak çok benzer olabilir; ayırım için ALK (D5F3) immün boyası kritiktir (medüller Ca’da ALK negatiftir).</li>
-<li><strong>Mide kaynaklı metastatik kanser:</strong> Mucinöz kribriform yapılar böbreğe metastaz yapan mide kanserinde de olabilir; PAX8 pozitifliği renal primeri destekler, mide kanseri metastazı PAX8 negatif olur.</li>
-<li><strong>Toplayıcı kanal karsinomu:</strong> ALK-rearrange RCC medullada yüksek dereceli adenoca şeklinde görünebilir; ALK boyası Bellini’de negatiftir. Ayrıca Bellini tümörü CK7(+) iken ALK+ RCC’de CK7 genellikle negatiftir.</li>
-</ul>`,
-        immuno: "PAX8 pozitiftir. ALK (D5F3 klonu) immünhistokimyası güçlü diffüz sitoplazmik membran boyanma gösterir ve tanı koydurucudur. Pan-sitokeratinler genellikle pozitiftir ancak bazı vakalarda odaksal olabilir. EMA pozitiftir. Melanositik markerlar genelde negatiftir.",
-        molecular: "ALK gen füzyonu (ör. VCL-ALK, TPM3-ALK, EML4-ALK) saptanır. Yaklaşık 30 civarı vaka literatürde bildirilmiştir. ALK gen yeniden düzenlemesi, FISH veya NGS ile doğrulanabilir. ALK inhibitörleri (kriter olarak alectinib vb.) bazı hastalarda objektif yanıt sağlamıştır.",
-        prognosis: "Kısıtlı sayıdaki vakaya dayanarak, VCL-ALK füzyonlu olgular daha indolen seyrederken, diğer partner genli ALK füzyonları daha agresif seyir gösterebilir. Genel olarak metastaz potansiyeli vardır ancak ALK hedefli tedaviye yanıt olasıdır.",
-        report: "Morfolojik ve ALK immünboya bulguları, ALK translokasyonlu renal hücreli karsinom ile uyumludur."
-      }
-    };
-    const finalUnclassified = {
-      diagnosis: "Sınıflandırılamayan Renal Hücreli Karsinom",
-      info: {
-        morphology: "Hiçbir tanımlanmış alt tipin morfolojik, immünofenotipik veya moleküler özelliklerini tam olarak yansıtmayan heterojen bir tümör grubudur. Genellikle pleomorfik, yüksek dereceli ve/veya sarkomatoid hücre popülasyonları içerir. Bazı olgularda müsinöz ve hatta nöroendokrin farklılaşma alanları görülebilir. Karma paternli, tanımlanması güç tablolardır.",
-        differential: `<ul>
-<li>Tüm bilinen alt tipler ekarte edildikten sonra bu tanı konur. Özellikle sarkomatoid veya rabdoid değişim gösteren olgularda altta yatan tip tespit edilemiyorsa “unclassified RCC” olarak adlandırılır. Geniş immun panel (CAIX, CK7, CD10, SDHB, FH, TFE3, TFEB, ALK vs.) ile tüm belirteçler ya uyumsuz ya da negatif sonuçlanmıştır.</li>
-</ul>`,
-        immuno: "Genellikle PAX8 pozitiftir ancak bunun dışında konsensüs bir immunofenotip yoktur. Immunhistokimya, diğer olasılıkları dışlamak için kullanılır. Örneğin tüm bilinen translokasyon (TFE3/TFEB/ALK) boyaları, FH/SDHB boyaları ve klasik RCC markerları yapılıp hiçbiri net bir alt tipi göstermediğinde “unclassified” denir.",
-        molecular: "Spesifik bir genetik profil tanımlanmamıştır. Çoğunlukla komplike karyotipler veya birden fazla alt tipin özelliklerini bir arada taşırlar. Bazen primer tümörün alt tipi anlaşılmadan metastazlardan tanı konur (bu durumda da unclassified denebilir).",
-        prognosis: "Prognoz esas olarak tümörün derecesine ve evresine bağlı olarak değişir. Çoğu sınıflandırılamayan RCC yüksek dereceli ve ileri evrede tespit edildiğinden, klinik seyir genellikle kötüdür. Sarkomatoid ve/veya rabdoid farklılaşma varlığı çok olumsuz bir prognostik faktördür (ISUP grade 4 kabul edilir).",
-        report: "Mevcut morfolojik ve immünhistokimyasal bulgular, tümörü bilinen alt tiplerden herhangi birine sokmamaktadır. Bu nedenle “sınıflandırılamayan yüksek dereceli renal hücreli karsinom” tanısı konmuştur."
-      }
-    };
+  <div class="page">
+    <section class="hero" id="overview">
+      <div class="hero-main">
+        <div class="hero-badge-row">
+          <span class="badge badge-soft">
+            <span class="badge-dot"></span> WHO 2022 &amp; GUPS uyumlu çerçeve
+          </span>
+          <span class="badge">Onkositik / eozinofilik renal tümörler</span>
+        </div>
+        <h1>
+          <span>Renal Onkositik Tümörler:</span> Pratik tanı algoritması
+        </h1>
+        <p>
+          Bu sayfa, onkositik/eozinofilik sitoplazmalı renal tümörler için
+          <strong>morfoloji + hedefli İHK (CK7, CD117/KIT, CK20, GATA3, Cathepsin K, SDHB)</strong>
+          temelli, günlük pratikte kullanılabilir bir akış şeması sunar.
+        </p>
+        <p class="hero-note">
+          <strong>Uyarı:</strong> Bu doküman
+          <strong>yalnızca eğitim ve hızlı referans amaçlıdır</strong>.
+          Nihai tanı ve raporlama için daima
+          <strong>WHO 2022 sınıflaması, GUPS konsensusu ve merkezinizin moleküler test politikaları</strong>
+          esas alınmalıdır.
+        </p>
+      </div>
 
-    // Diagnostic algorithm tree structure
-    const rootNode = {
-      question: "Tümörün baskın mikroskopik paterni nedir?",
-      options: [
-        { text: "Papiller (papilla yapıları belirgin)", next: { 
-            question: "Papiller tümörde hücrelerin görünümü ve derecesi:",
-            options: [
-              { text: "Küçük, tek sıra dizilimli, soluk sitoplazmalı (düşük dereceli)", next: finalPapillary1 },
-              { text: "Büyük, yalancı katmanlı, eozinofilik (yüksek dereceli)", next: { 
-                  question: "Nükleoller çok belirgin (inklüzyon benzeri) mi?",
-                  options: [
-                    { text: "Evet, belirgin & inklüzyon tarzı nükleoller var", next: finalFHdef },
-                    { text: "Hayır, sadece yüksek dereceli fakat ekstrem değil", next: finalPapillary2 }
-                  ]
-                } 
-              },
-              { text: "Berrak + eozinofilik hücre karışımı, bol psammom cisimcikli", next: finalXp11 }
-            ]
-        } },
-        { text: "Solid / kompakt (papiller değil) yapı", next: {
-            question: "Solid tümörde hücrelerin sitoplazma özelliği:",
-            options: [
-              { text: "Berrak (şeffaf) sitoplazmalı hücreler", next: {
-                  question: "Tümör tamamen kistik yapıda mı (solid komponent yok)?",
-                  options: [
-                    { text: "Evet, çok odacıklı kistik yapıdan ibaret", next: finalMultilocular },
-                    { text: "Hayır, kistik alanlar yanında solid nodüller de var", next: finalClearCell }
-                  ]
-                }
-              },
-              { text: "Eozinofilik / granüler (pembe) sitoplazmalı hücreler", next: {
-                  question: "Perinükleer halo ve büzüşük çekirdekler var mı?",
-                  options: [
-                    { text: "Evet, belirgin halo ve ‘raisinoid’ çekirdekler görülüyor", next: finalChromophobe },
-                    { text: "Hayır, böyle belirgin halo veya çekirdek büzüşmesi yok", next: {
-                        question: "Hücreler çok uniform, yuvarlak çekirdekli ve granüler onkositik mi?",
-                        options: [
-                          { text: "Evet, hücreler uniform ve onkositik görünümlü", next: finalOncocytoma },
-                          { text: "Hayır, hücreler heterojen/atipik görünüyor", next: finalSDH }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              },
-              { text: "Alışılmadık / özel paternli hücreler", next: {
-                  question: "Alışılmadık histolojik özellikler:",
-                  options: [
-                    { text: "Büyük epiteloid hücreler + aralarında küçük hücreli yuvalar (bifazik görünüm)", next: finalTFEB },
-                    { text: "Müsinli adacıClearveya imza yüzüğü hücreleri bulunuyor", next: finalALK },
-                    { text: "Hiçbir alt tipe tam uymayan karma özellikler", next: finalUnclassified }
-                  ]
-                }
-              }
-            ]
-        } },
-        { text: "Tübüler veya kistik (multikistik/tubülokistik) yapı", next: {
-            question: "Tübülokistik/kistik paterne dair en uygun tanım:",
-            options: [
-              { text: "Tamamen çok sayıda kistik boşluk ve ince septalardan oluşuyor", next: finalMultilocular },
-              { text: "Küçük-orta çaplı tubül ve kistler, belirgin nükleollü eozinofilik hücreli", next: finalTubulocystic },
-              { text: "Düşük dereceli berrak hücreli tubulo-papiller yapılar (apikal çekirdek dizilimi)", next: finalClearPapillary },
-              { text: "Mikrokistik (süngerimsi) alanlar ve oksalat kristalleri görülüyor", next: finalACKD }
-            ]
-        } },
-        { text: "İğsi hücreli / Sarkomatoid görünüm baskın", next: {
-            question: "İğsi/sarkomatoid tümörün karakteri:",
-            options: [
-              { text: "Düşük dereceli, müsinöz stromalı iğsi hücreli komponent", next: finalMTSCC },
-              { text: "Yüksek dereceli, düktal yapılı ve desmoplastik stromalı", next: finalCollecting },
-              { text: "Yüksek dereceli, geniş nekroz alanlı, genç hasta (HbAS öykülü)", next: finalMedullary },
-              { text: "Tamamen sarkomatoid/rabdoid farklılaşma mevcut", next: finalUnclassified }
-            ]
-        } },
-        { text: "Karışık / kararsız (hiçbiri baskın değil)", next: {
-            question: "Karma veya belirsiz durum:",
-            options: [
-              { text: "Birden fazla paterni eşit derecede barındırıyor", next: finalUnclassified },
-              { text: "Hiçbir kategoriye uyduramadım", next: finalUnclassified }
-            ]
-        } }
-      ]
-    };
+      <aside class="hero-side">
+        <div class="hero-side-title">
+          <div>Algoritmanın kalbi</div>
+          <span>3 adımda yaklaşım</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip primary">CK7 / KIT ekseninde ilk ayrım</span>
+          <span class="chip">CK20 &amp; GATA3 ile ince ayar</span>
+          <span class="chip">Cathepsin K &amp; SDHB ile özel alt tipler</span>
+          <span class="chip warn">Morfoloji daima başrolde</span>
+        </div>
+        <div class="hero-mini-flow">
+          <div class="mini-step">
+            <div class="mini-step-label">Adım 1</div>
+            <div class="mini-step-main">
+              Morfoloji: <span>onkositik/eozinofilik</span> lezyonu tanıla
+            </div>
+            <div class="mini-step-extra">
+              Solid, kistik, tubulopapiller yapı &amp; nükleer derecelendirme
+            </div>
+          </div>
+          <div class="mini-step">
+            <div class="mini-step-label">Adım 2</div>
+            <div class="mini-step-main">
+              Panel: <span>CK7 + KIT ± CK20</span>
+            </div>
+            <div class="mini-step-extra">
+              CK7 diffüz vs fokal, KIT pozitiflik paterni
+            </div>
+          </div>
+          <div class="mini-step">
+            <div class="mini-step-label">Adım 3</div>
+            <div class="mini-step-main">
+              Özel markerlar: <span>GATA3, Cathepsin K, SDHB</span>
+            </div>
+            <div class="mini-step-extra">
+              LOT, EVT, ESC RCC, SDH-def RCC, PRNRP ayrımı
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
 
-    // Global state for path
-    let pathSelections = [];
+    <main>
+      <!-- QUICK APPROACH -->
+      <section id="quick">
+        <h2>
+          Hızlı yaklaşım
+          <span class="pill">Çekirdek biyopside pratik karar desteği</span>
+        </h2>
+        <p class="section-tagline">
+          Çekirdek biyopsi veya küçük parsiyel nefrektomi materyalinde onkositik/eozinofilik lezyonla karşılaşıldığında
+          kullanılabilecek kısa bir yol haritası.
+        </p>
 
-    const pathListElem = document.getElementById('pathList');
-    const contentElem = document.getElementById('content');
+        <div class="quick-grid">
+          <div>
+            <div class="callout">
+              <strong>1. Morfolojiyle başlanır:</strong>
+              <ul class="checklist">
+                <li><strong>Solid onkositik nodül</strong> (fibroz kapsül, mahmuz bulgusu?)</li>
+                <li><strong>Solid + tubulokistik</strong> yapı, perinükleer halo, bitki hücresi benzeri görünüm?</li>
+                <li><strong>Solid + kistik, makrokistik</strong> alanlar, köpüksü eozinofilik hücreler?</li>
+                <li><strong>Papiller / tubulopapiller</strong> yapı, ters kutuplu nükleus?</li>
+                <li>Gros ve radyolojik bilgilerle korelasyon (boyut, multifokalite, herediter sendrom şüphesi)</li>
+              </ul>
+            </div>
+          </div>
 
-    function renderPath() {
-      // Update the displayed list of selections
-      pathListElem.innerHTML = "";
-      pathSelections.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        pathListElem.appendChild(li);
-      });
-    }
+          <div>
+            <div class="callout">
+              <strong>2. Minimal İHK paneli (önerilen çekirdek panel):</strong>
+              <div class="pill-row">
+                <span class="pill-soft"><strong>CK7</strong> (diffüz / fokal / negatif)</span>
+                <span class="pill-soft"><strong>CD117 / KIT</strong></span>
+                <span class="pill-soft"><strong>CK20</strong></span>
+                <span class="pill-soft"><strong>GATA3</strong></span>
+                <span class="pill-soft"><strong>Cathepsin K</strong></span>
+                <span class="pill-soft"><strong>SDHB</strong> (kayıp var/yok)</span>
+              </div>
+              <p style="margin-top:0.45rem;font-size:0.78rem;color:var(--text-muted);">
+                Bu panelle çoğu onkositik/eozinofilik lezyon <strong>Onkositom, ChRCC, LOT, EVT, ESC RCC, SDH-def RCC,
+                PRNRP</strong> spektrumu içinde anlamlı şekilde sınıflanabilir.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    function renderNode(node) {
-      // Clear existing content
-      contentElem.innerHTML = "";
-      // Check if node is a final diagnosis (has info)
-      if(node.info) {
-        // Final diagnosis node
-        const diagnosisTitle = document.createElement('h2');
-        diagnosisTitle.textContent = node.diagnosis;
-        contentElem.appendChild(diagnosisTitle);
+      <!-- FLOW / ALGORITHM -->
+      <section id="flow">
+        <h2>
+          Tanı algoritması
+          <span class="pill">CK7 / KIT ekseninde dallanan flow chart</span>
+        </h2>
+        <p class="section-tagline">
+          Aşağıdaki akış şeması, onkositik/eozinofilik renal tümörlerde temel İHK kombinasyonlarına göre
+          <strong>olası tanı spektrumunu</strong> gösterir.
+        </p>
 
-        // Utility to append a section (label: content). Handles list content appropriately.
-        function appendSection(label, contentHTML) {
-          if(contentHTML.trim().startsWith("<ul")) {
-            // if content is a list, insert label as paragraph and then insert the list HTML
-            const secLabel = document.createElement('p');
-            secLabel.innerHTML = `<strong>${label}:</strong>`;
-            contentElem.appendChild(secLabel);
-            const secDiv = document.createElement('div');
-            secDiv.innerHTML = contentHTML;
-            contentElem.appendChild(secDiv);
-          } else {
-            const secParagraph = document.createElement('p');
-            secParagraph.innerHTML = `<strong>${label}:</strong> ${contentHTML}`;
-            contentElem.appendChild(secParagraph);
-          }
-        }
+        <div class="flow-wrapper">
+          <div class="flow-column">
+            <div class="flow-step">
+              <div class="flow-step-number">1</div>
+              <div class="flow-step-main">
+                <div class="flow-step-title">Başlangıç: Onkositik / eozinofilik renal tümör</div>
+                <div class="flow-step-body">
+                  Solid, tubulokistik, papiller veya miks patern gösteren,
+                  <strong>granüler eozinofilik / onkositik sitoplazmalı</strong> renal tümör.
+                  Önce <strong>klasik clear cell RCC</strong> ve açıkça non-onkositik papiller RCC dışlanır
+                  (CAIX, vimentin, CD10 vb. ile).
+                </div>
+              </div>
+            </div>
 
-        appendSection("Morfoloji", node.info.morphology);
-        appendSection("Ayırıcı Tanı", node.info.differential);
-        appendSection("IHK Profili", node.info.immuno);
-        appendSection("Moleküler", node.info.molecular);
-        appendSection("Prognoz", node.info.prognosis);
-        appendSection("Önerilen Rapor", node.info.report);
+            <div class="flow-step">
+              <div class="flow-step-number">2</div>
+              <div class="flow-step-main">
+                <div class="flow-step-title">CK7 &amp; KIT (CD117) ile ilk ayrım</div>
+                <div class="flow-step-body">
+                  Temel eksen: <strong>CK7 diffüz mü?</strong> ve <strong>KIT pozitif mi?</strong>
+                </div>
+                <div class="flow-branch-grid">
+                  <div class="flow-branch">
+                    <strong>CK7 fokal / negatif, KIT pozitif</strong><br />
+                    &rarr; Öncelikle <strong>Onkositom</strong> düşün.<br />
+                    – S100A1 pozitif, vimentin negatif destekler.<br />
+                    – Morfolojik kapsül, merkez skar, mahmuz bulgusu +.
+                  </div>
+                  <div class="flow-branch">
+                    <strong>CK7 diffüz, KIT pozitif</strong><br />
+                    &rarr; <strong>Chromophobe RCC (klasik / eozinofilik)</strong> ön planda.<br />
+                    – Hale colloidal iron +, bitki hücresi görünümü, perinükleer halo.
+                  </div>
+                  <div class="flow-branch">
+                    <strong>CK7 diffüz, KIT negatif</strong><br />
+                    &rarr; <strong>LOT</strong> ve <strong>PRNRP</strong> spektrumu.<br />
+                    – GATA3, L1CAM, papiller mimari, KRAS durumu yol gösterir.
+                  </div>
+                  <div class="flow-branch">
+                    <strong>CK7 negatif, KIT negatif</strong><br />
+                    &rarr; CK20, Cathepsin K ve SDHB ile:<br />
+                    – CK20+, CK7–: ESC RCC<br />
+                    – SDHB kaybı: SDH-def RCC<br />
+                    – Cathepsin K+, KIT+: EVT (CK7 genelde negatif/odaksal).
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        // Restart button
-        const restartBtn = document.createElement('button');
-        restartBtn.textContent = "Baştan Başla";
-        restartBtn.className = "option";
-        restartBtn.onclick = restart;
-        contentElem.appendChild(restartBtn);
-      } else if(node.question) {
-        // Intermediate question node
-        const questionElem = document.createElement('h2');
-        questionElem.textContent = node.question;
-        contentElem.appendChild(questionElem);
-        // Options container
-        const optionsDiv = document.createElement('div');
-        optionsDiv.id = "options";
-        contentElem.appendChild(optionsDiv);
-        // Create a button for each option
-        node.options.forEach(option => {
-          const btn = document.createElement('button');
-          btn.className = "option";
-          btn.textContent = option.text;
-          btn.onclick = () => handleOption(option);
-          optionsDiv.appendChild(btn);
-        });
-      }
-    }
+            <div class="flow-step">
+              <div class="flow-step-number">3</div>
+              <div class="flow-step-main">
+                <div class="flow-step-title">Özel markerlarla netleştirme</div>
+                <div class="flow-step-body">
+                  Kuşkulu olgularda aşağıdaki “ince ayar” markerları ekle:
+                </div>
+                <div class="flow-branch-grid">
+                  <div class="flow-branch">
+                    <strong>GATA3</strong><br />
+                    – LOT: genellikle GATA3 pozitif<br />
+                    – PRNRP: diffüz CK7+, GATA3+ ve sıklıkla L1CAM+
+                  </div>
+                  <div class="flow-branch">
+                    <strong>CK20</strong><br />
+                    – ESC RCC: CK20 diffüz+, CK7–<br />
+                    – SDH-def RCC: çoğu CK20– (ancak nadir CK20+ olgular raporlanmıştır)
+                  </div>
+                  <div class="flow-branch">
+                    <strong>Cathepsin K</strong><br />
+                    – EVT ve bazı TSC/MTOR yoluna bağlı eozinofilik tümörlerde pozitif<br />
+                    – LOT tipik olarak Cathepsin K– / zayıf
+                  </div>
+                  <div class="flow-branch">
+                    <strong>SDHB</strong><br />
+                    – SDH-def RCC: tümör hücrelerinde SDHB kaybı, iç kontrolde korunmuş boyanma
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    function handleOption(option) {
-      // Add this selection to path
-      pathSelections.push(option.text);
-      renderPath();
-      // Determine next node
-      const nextNode = option.next;
-      renderNode(nextNode);
-    }
+          <aside class="flow-side-note">
+            <h3>Algoritmayı kullanırken hatırlanması gerekenler</h3>
+            <ul class="checklist" style="margin-top:0.3rem;">
+              <li>
+                Algoritma <strong>morfo + İHK entegrasyonu</strong> içindir; tek başına marker paternine dayanarak tanı koyma.
+              </li>
+              <li>
+                “Borderline / NOS” alanı her zaman vardır; kuşkulu olgularda
+                <strong>moleküler testler (TSC1/2, MTOR, KRAS, SDH mutasyon taraması vb.)</strong> düşünülebilir.
+              </li>
+              <li>
+                Küçük biyopsilerde, tüm tümör heterojenitesini görmediğin için
+                raporda <strong>“sınırlı örneklem” vurgusu</strong> yapmak önemlidir.
+              </li>
+              <li>
+                Klinik/radyolojik bağlam (nüks, metastaz, herediter sendrom şüphesi)
+                <strong>nihai yorumda her zaman hesaba katılmalıdır</strong>.
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </section>
 
-    function restart() {
-      // Reset to initial state
-      pathSelections = [];
-      renderPath();
-      renderNode(rootNode);
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+      <!-- IHC TABLE -->
+      <section id="ihc">
+        <h2>
+          Özet İHK paneli
+          <span class="pill">Onkositik / eozinofilik spektrumda temel paternler</span>
+        </h2>
+        <p class="section-tagline">
+          İHK sonuçları vaka bazında değişkenlik gösterebilir; aşağıdaki tablo, literatürde en sık bildirilen
+          <strong>tipik paternleri</strong> özetler.
+        </p>
 
-    // Initialize with root question
-    renderNode(rootNode);
-  </script>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Tümör</th>
+                <th>CK7</th>
+                <th>CD117 / KIT</th>
+                <th>CK20</th>
+                <th>GATA3</th>
+                <th>Cathepsin K</th>
+                <th>SDHB</th>
+                <th>Diğer tipik bulgular</th>
+              </tr>
+            </thead>
+            <tbody>
+<tr>
+  <td>Renal Onkositom</td>
+  <td><span class="ihc-var">Fokal / nadiren diffüz+</span></td>
+  <td><span class="ihc-pos">Diffüz+</span></td>
+  <td><span class="ihc-neg">–</span></td>
+  <td><span class="ihc-neg">–</span></td>
+  <td><span class="ihc-neg">–</span></td>
+  <td><span class="ihc-pos">Korunmuş</span></td>
+  <td>S100A1+, CAIX–</td>
+</tr>
+<tr>
+  <td>Chromophobe RCC (eozinofilik dahil)</td>
+  <td><span class="ihc-pos">Diffüz+</span></td>
+  <td><span class="ihc-pos">Diffüz+</span></td>
+  <td><span class="ihc-neg">–</span></td>
+  <td><span class="ihc-neg">–</span></td>
+  <td><span class="ihc-neg">–</span></td>
+  <td><span class="ihc-pos">Korunmuş</span></td>
+  <td>EMA+, CAIX–, sık CK7+/KIT+</td>
+</tr>
+
+              <tr>
+                <td>Low-grade Oncocytic Tumor (LOT)</td>
+                <td><span class="ihc-pos">Diffüz+</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-pos">Çoğu olguda+</span></td>
+                <td><span class="ihc-neg">– / zayıf</span></td>
+                <td><span class="ihc-pos">Korunmuş</span></td>
+                <td>FOXI1–, genelde MTOR/TSC yol mutasyonları</td>
+              </tr>
+              <tr>
+                <td>Eosinophilic Vacuolated Tumor (EVT)</td>
+                <td><span class="ihc-var">Değişken, sık – / fokal+</span></td>
+                <td><span class="ihc-pos">Diffüz+</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-pos">Diffüz+</span></td>
+                <td><span class="ihc-pos">Korunmuş</span></td>
+                <td>CD10+, antimitochondrial Ag+, MTOR/TSC yol değişiklikleri</td>
+              </tr>
+              <tr>
+                <td>Eosinophilic Solid and Cystic RCC (ESC RCC)</td>
+                <td><span class="ihc-neg">– / nadiren fokal+</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-pos">Diffüz+</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-var">Değişken</span></td>
+                <td><span class="ihc-pos">Korunmuş</span></td>
+                <td>Genelde TSC ile ilişkili, PAX8+, AMACR değişken</td>
+              </tr>
+              <tr>
+                <td>SDH-defisient RCC</td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-neg">Genelde –</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-neg">Tümör hücrelerinde kayıp</span></td>
+                <td>SDHB kaybı tanısal, bazen SDHA da kayıp; onkositik / eozinofilik hücreler</td>
+              </tr>
+              <tr>
+                <td>Papillary Renal Neoplasm with Reverse Polarity (PRNRP)</td>
+                <td><span class="ihc-pos">Diffüz+</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-neg">– / nadir fokal+</span></td>
+                <td><span class="ihc-pos">Pozitif</span></td>
+                <td><span class="ihc-neg">–</span></td>
+                <td><span class="ihc-pos">Korunmuş</span></td>
+                <td>L1CAM+, KRAS mutasyonları sık, vimentin–</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="ihc-note">
+          <strong>Not:</strong> “Diffüz” ifadesi genellikle tümör hücrelerinin &gt;%70’inde kuvvetli boyanmayı ifade eder.
+          <strong>Fokal</strong> boyanma, özellikle Onkositom ve bazı hibrit tümörlerde ayırıcı tanıda önemlidir.
+          İHK sonuçları tek başına tanı için yeterli değildir; <strong>morfoloji ve klinik bağlamla</strong> birlikte değerlendirilmelidir.
+        </p>
+      </section>
+
+      <!-- ENTITY CARDS -->
+      <section id="entities">
+        <h2>
+          Tümör bazlı özet kartlar
+          <span class="pill">Her entite için morfoloji + İHK + moleküler</span>
+        </h2>
+        <p class="section-tagline">
+          Sık karşılaşılan veya GUPS/WHO tarafından vurgulanan onkositik/eozinofilik renal entiteler için
+          kısa ama yoğun içerikli referans kartları.
+        </p>
+
+        <div class="entity-grid">
+          <!-- Oncocytoma -->
+          <article class="entity-card" id="oncocytoma">
+            <div class="entity-header">
+              <div class="entity-name">Renal Onkositom</div>
+              <div class="entity-label benign">Benign, en sık onkositik neoplazm</div>
+            </div>
+            <div class="entity-meta">
+              Solid, sıklıkla iyi sınırlı; çoğu olgu tesadüfen saptanır, prognoz mükemmel.
+            </div>
+            <div class="entity-body">
+              <div>
+                <div class="entity-subtitle">Morfoloji</div>
+                <ul class="entity-list">
+                  <li>Genellikle <strong>iyi sınırlı, ince kapsüllü</strong> kahverengi-tan nodül.</li>
+                  <li>Merkezde <strong>fibroz skar</strong> sık; “mahmuza” benzer çıkıntılar kortekse uzanabilir.</li>
+                  <li>Uniform onkositik hücreler: <strong>granüler eosinofilik sitoplazma</strong>, round/oval nükleus, belirgin nükleol genelde yok.</li>
+                  <li>Mitotik aktivite düşüktür; nekroz beklenmez.</li>
+                </ul>
+                <div class="entity-subtitle">Ayırıcı tanı ipuçları</div>
+                <ul class="entity-list">
+                  <li><strong>ChRCC</strong>: CK7 diffüz+, perinükleer halo, bitki hücresi görünümü.</li>
+                  <li><strong>LOT</strong>: CK7 diffüz+, KIT–; morfoloji daha düzenli, düşük nükleer dereceli plaklar.</li>
+                  <li><strong>Hibrit onkositik/ChRCC</strong> sendromik olgular TSC/BHD ile ilişkili olabilir.</li>
+                </ul>
+              </div>
+              <div>
+                <div class="entity-subtitle">İHK &amp; Moleküler</div>
+                <ul class="entity-list">
+                  <li>CK7: genellikle <strong>fokal / seyrek</strong> pozitif.</li>
+                  <li>CD117/KIT: <strong>diffüz pozitif</strong>.</li>
+                  <li>S100A1: pozitif.</li>
+                  <li>CAIX: negatif; GATA3: genellikle negatif.</li>
+                  <li>Moleküler: sıklıkla <strong>mitokondriyal DNA çoğalması</strong>; tipik onkojenik mutasyonlar belirgin değil.</li>
+                </ul>
+<div class="entity-tag-row">
+  <span class="entity-tag">KIT+ / CK7 fokal+</span>
+  <span class="entity-tag">S100A1+</span>
+</div>
+
+              </div>
+            </div>
+          </article>
+
+          <!-- Chromophobe RCC -->
+          <article class="entity-card" id="chrcc">
+            <div class="entity-header">
+              <div class="entity-name">Chromophobe Renal Hücreli Karsinom (ChRCC)</div>
+              <div class="entity-label malign">Düşük-orta derecede malign, KIT+/CK7+</div>
+            </div>
+            <div class="entity-meta">
+              Non-clear cell RCC’lerin önemli bir alt tipi; klasik ve eozinofilik varyantı onkositomla sık karışır.
+            </div>
+            <div class="entity-body">
+              <div>
+                <div class="entity-subtitle">Morfoloji</div>
+                <ul class="entity-list">
+                  <li>Soluk, açık sitoplazmalı veya eozinofilik tür; <strong>perinükleer halo</strong> ve “bitki hücresi” görünümü tipik.</li>
+                  <li>Nükleuslar düzensiz, bazen <strong>“çekirdek zarı kalınlaşması”</strong> hissi verir.</li>
+                  <li>Çoğu solid/tubuler trabeküler patern; kistik değişiklik olabilir.</li>
+                  <li>Hale colloidal iron boyası genellikle difüz pozitif.</li>
+                </ul>
+                <div class="entity-subtitle">Ayırıcı tanı ipuçları</div>
+                <ul class="entity-list">
+                  <li>Onkositom: KIT+ olsa da CK7 çoğunlukla fokal; S100A1+ ve vimentin–.</li>
+                  <li>LOT: CK7 diffüz+, ancak KIT– ve morfolojisi daha düşük dereceli onkositik plaklar.</li>
+                  <li>EVT: belirgin sitoplazmik vakuoller, Cathepsin K+.</li>
+                </ul>
+              </div>
+              <div>
+                <div class="entity-subtitle">İHK &amp; Moleküler</div>
+                <ul class="entity-list">
+                  <li>CK7: <strong>diffüz pozitif</strong>.</li>
+                  <li>CD117/KIT: <strong>diffüz pozitif</strong>.</li>
+                  <li>Vimentin: genellikle negatif.</li>
+                  <li>CAIX: negatif (clear cell RCC’den ayrım için).</li>
+                  <li>Moleküler: sıklıkla <strong>çoklu kromozom kayıpları (1, 2, 6, 10, 13, 17 vb.)</strong>.</li>
+                </ul>
+                <div class="entity-tag-row">
+                  <span class="entity-tag">CK7 diffüz+</span>
+                  <span class="entity-tag">KIT diffüz+</span>
+                  <span class="entity-tag">Hale iron+</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- LOT -->
+          <article class="entity-card" id="lot">
+            <div class="entity-header">
+              <div class="entity-name">Low-grade Oncocytic Tumor (LOT)</div>
+              <div class="entity-label low">Emerging entite, KIT– / CK7 diffüz+</div>
+            </div>
+            <div class="entity-meta">
+              GUPS ve WHO güncellemelerinde vurgulanan, düşük dereceli onkositik tümör; tanıda CK7+/KIT– paterni kritiktir.
+            </div>
+            <div class="entity-body">
+              <div>
+                <div class="entity-subtitle">Morfoloji</div>
+                <ul class="entity-list">
+                  <li>Genellikle <strong>iyi sınırlı, solid</strong> veya mikrokistik alanlar içeren onkositik tümör.</li>
+                  <li>Hücreler <strong>uniform, düşük nükleer dereceli</strong>; belirgin nükleol genellikle yok.</li>
+                  <li>Perinükleer halo çok belirgin değildir; ChRCC’e göre daha “monoton” plaklar.</li>
+                  <li>Nekroz ve belirgin mitoz nadirdir.</li>
+                </ul>
+                <div class="entity-subtitle">Ayırıcı tanı ipuçları</div>
+                <ul class="entity-list">
+                  <li>Onkositom: KIT+; LOT ise net <strong>KIT–</strong>.</li>
+                  <li>ChRCC: CK7+/KIT+; LOT: CK7+/KIT–.</li>
+                  <li>EVT: belirgin sitoplazmik vakuoller, Cathepsin K+, genelde CK7–/fokal+.</li>
+                </ul>
+              </div>
+              <div>
+                <div class="entity-subtitle">İHK &amp; Moleküler</div>
+                <ul class="entity-list">
+                  <li>CK7: <strong>diffüz pozitif</strong>.</li>
+                  <li>CD117/KIT: <strong>negatif</strong>.</li>
+                  <li>GATA3: çoğu olguda pozitif.</li>
+                  <li>FOXI1: genellikle negatif (ChRCC’ten ayırıcı).</li>
+                  <li>Moleküler: sıklıkla <strong>TSC1/TSC2 / MTOR/PIK3CA</strong> mutasyonları.</li>
+                </ul>
+                <div class="entity-tag-row">
+                  <span class="entity-tag">CK7 diffüz+</span>
+                  <span class="entity-tag">KIT–</span>
+                  <span class="entity-tag">GATA3 sıklıkla+</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- EVT -->
+          <article class="entity-card" id="evt">
+            <div class="entity-header">
+              <div class="entity-name">Eosinophilic Vacuolated Tumor (EVT)</div>
+              <div class="entity-label low">Emerging entite, Cathepsin K+/KIT+</div>
+            </div>
+            <div class="entity-meta">
+              GUPS tarafından tanımlanan yeni onkositik tümör; belirgin intracytoplasmic vakuoller ve MTOR/TSC yolu ile ilişkili.
+            </div>
+            <div class="entity-body">
+              <div>
+                <div class="entity-subtitle">Morfoloji</div>
+                <ul class="entity-list">
+                  <li>Solid onkositik tümör; <strong>büyük sitoplazmik vakuoller</strong> karakteristiktir.</li>
+                  <li>Hücreler eozinofilik, nükleuslar atipik ve nükleoller belirgin olabilir.</li>
+                  <li>Çoğu vaka düşük dereceli davranış gösterse de morfolojik atipi onkositom/LOT’tan daha fazladır.</li>
+                </ul>
+                <div class="entity-subtitle">Ayırıcı tanı ipuçları</div>
+                <ul class="entity-list">
+                  <li>ChRCC: vakuoller yerine perinükleer halo baskındır; Cathepsin K genelde negatif.</li>
+                  <li>LOT: vakuoller belirgin değil; KIT– ve Cathepsin K–.</li>
+                  <li>ESC RCC: solid-kistik patern, CK20+ / CK7–.</li>
+                </ul>
+              </div>
+              <div>
+                <div class="entity-subtitle">İHK &amp; Moleküler</div>
+                <ul class="entity-list">
+                  <li>CD117/KIT: genellikle pozitif.</li>
+                  <li>Cathepsin K: <strong>diffüz pozitif</strong> (ana ayırıcı özellik).</li>
+                  <li>CK7: değişken, çoğu olguda negatif veya fokal pozitif.</li>
+                  <li>CD10, antimitochondrial antijen: pozitif.</li>
+                  <li>Moleküler: <strong>MTOR/TSC yolu mutasyonları</strong> sık.</li>
+                </ul>
+                <div class="entity-tag-row">
+                  <span class="entity-tag">Vakuollü onkositik hücreler</span>
+                  <span class="entity-tag">Cathepsin K+</span>
+                  <span class="entity-tag">KIT+</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ESC RCC -->
+          <article class="entity-card" id="esc">
+            <div class="entity-header">
+              <div class="entity-name">Eosinophilic Solid and Cystic RCC (ESC RCC)</div>
+              <div class="entity-label malign">Genelde düşük gradeli, CK20+/CK7–</div>
+            </div>
+            <div class="entity-meta">
+              Solid ve kistik alanların karışımı, TSC ile güçlü ilişki; prognoz genellikle iyi, ancak malign potansiyeli olan bir RCC.
+            </div>
+            <div class="entity-body">
+              <div>
+                <div class="entity-subtitle">Morfoloji</div>
+                <ul class="entity-list">
+                  <li><strong>Solid tabakalar + makrokistik alanlar</strong>; duvarları eozinofilik hücrelerle döşeli.</li>
+                  <li>Hücreler geniş, granüler eozinofilik sitoplazmalı; bazen köpüksü.</li>
+                  <li>Çekirdekler genellikle düşük dereceli; atipi belirgin ise dikkatli olun.</li>
+                  <li>Sering TSC ile ilişkili; multifokalite/iki taraflılık görülebilir.</li>
+                </ul>
+                <div class="entity-subtitle">Ayırıcı tanı ipuçları</div>
+                <ul class="entity-list">
+                  <li>LOT/EVT: CK20–; ESC RCC’de ise CK20 diffüz+.</li>
+                  <li>Onkositom/ChRCC: kistik komponent genelde bu kadar belirgin değildir.</li>
+                </ul>
+              </div>
+              <div>
+                <div class="entity-subtitle">İHK &amp; Moleküler</div>
+                <ul class="entity-list">
+                  <li>CK20: <strong>diffüz pozitif</strong>.</li>
+                  <li>CK7: genellikle negatif.</li>
+                  <li>CD117/KIT: negatif.</li>
+                  <li>Moleküler: <strong>TSC1/TSC2 mutasyonları</strong> çok sık.</li>
+                </ul>
+                <div class="entity-tag-row">
+                  <span class="entity-tag">CK20 diffüz+</span>
+                  <span class="entity-tag">CK7–</span>
+                  <span class="entity-tag">TSC ilişkili</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- SDH-def RCC -->
+          <article class="entity-card" id="sdh">
+            <div class="entity-header">
+              <div class="entity-name">SDH-defisient Renal Hücreli Karsinom</div>
+              <div class="entity-label malign">Germline SDH mutasyonu ile ilişkili</div>
+            </div>
+            <div class="entity-meta">
+              SDHB kaybı ile tanımlanan, çoğu zaman indolent; ancak herediter sendromla ilişkili olduğu için aile taraması açısından kritik.
+            </div>
+            <div class="entity-body">
+              <div>
+                <div class="entity-subtitle">Morfoloji</div>
+                <ul class="entity-list">
+                  <li>Onkositik / eozinofilik hücreler; bazen “flülent/granüler” sitoplazma.</li>
+                  <li>Solid, tubuler veya kistik patern olabilir.</li>
+                  <li>Nükleer derecelendirme değişken; bazı olgular yüksek dereceli davranış gösterebilir.</li>
+                </ul>
+                <div class="entity-subtitle">Ayırıcı tanı ipuçları</div>
+                <ul class="entity-list">
+                  <li>Onkositom ve LOT’tan ayrımda <strong>SDHB immün boyaması</strong> anahtar.</li>
+                  <li>Genç hasta, aile öyküsü, ekstra-renal SDH ilişkili lezyonlar (paraganglioma vb.) varsa mutlaka düşün.</li>
+                </ul>
+              </div>
+              <div>
+                <div class="entity-subtitle">İHK &amp; Moleküler</div>
+                <ul class="entity-list">
+                  <li>SDHB: <strong>tümör hücrelerinde kayıp</strong>, iç kontrolde (endotel, tubulus) pozitif boyanma.</li>
+                  <li>CK7, KIT, CAIX genellikle negatif.</li>
+                  <li>Moleküler: <strong>SDHB/C/D veya SDHAF2 germline mutasyonu</strong>.</li>
+                </ul>
+                <div class="entity-tag-row">
+                  <span class="entity-tag">SDHB kaybı</span>
+                  <span class="entity-tag">Herediter sendrom</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- PRNRP -->
+          <article class="entity-card" id="prnrp">
+            <div class="entity-header">
+              <div class="entity-name">Papillary Renal Neoplasm with Reverse Polarity (PRNRP)</div>
+              <div class="entity-label low">Düşük malign potansiyelli papiller entite</div>
+            </div>
+            <div class="entity-meta">
+              Ters kutuplu nükleus yerleşimi ve KRAS mutasyonları ile karakterize, iyi prognozlu papiller neoplazi.
+            </div>
+            <div class="entity-body">
+              <div>
+                <div class="entity-subtitle">Morfoloji</div>
+                <ul class="entity-list">
+                  <li>Genellikle <strong>tek katlı, kuboidal-eozinofilik hücreli</strong> papiller/tubulopapiller yapı.</li>
+                  <li>Nükleuslar <strong>apikalde</strong> (lümene bakan tarafta), bu nedenle “reverse polarity”.</li>
+                  <li>Foam cell veya psammoma cisimleri genellikle minimal.</li>
+                </ul>
+                <div class="entity-subtitle">Ayırıcı tanı ipuçları</div>
+                <ul class="entity-list">
+                  <li>Tip 1/2 papiller RCC: vimentin sıklıkla pozitif ve CD10/AMACR paterni daha belirgin.</li>
+                  <li>LOT ile örtüşebilir; papiller mimari ve KRAS mutasyonu PRNRP lehinedir.</li>
+                </ul>
+              </div>
+              <div>
+                <div class="entity-subtitle">İHK &amp; Moleküler</div>
+                <ul class="entity-list">
+                  <li>CK7: <strong>diffüz pozitif</strong>.</li>
+                  <li>GATA3: pozitif.</li>
+                  <li>CD117/KIT: negatif.</li>
+                  <li>L1CAM: sıklıkla pozitif.</li>
+                  <li>Moleküler: <strong>KRAS mutasyonu</strong> çok sık; bazen BRAF mutasyonu da bildirilebilir.</li>
+                </ul>
+                <div class="entity-tag-row">
+                  <span class="entity-tag">CK7 diffüz+</span>
+                  <span class="entity-tag">GATA3+</span>
+                  <span class="entity-tag">KRAS mut+</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- REFERENCES -->
+      <section id="refs">
+        <h2>
+          Kısa kaynak listesi
+          <span class="pill">WHO 2022, GUPS ve son review’lar</span>
+        </h2>
+        <p class="section-tagline">
+          Ayrıntılı okuma için önerilen temel kaynaklar. Bu listede yalnızca öne çıkan başlıklar yer almaktadır.
+        </p>
+
+        <details>
+          <summary>Temel sınıflama ve algoritma yayınları</summary>
+          <ul class="refs">
+            <li>WHO Classification of Tumours of the Urinary System and Male Genital Organs, 5. baskı (2022).</li>
+            <li>Trpkov K. ve ark. Genitourinary Pathology Society (GUPS) renal tümör konsensus ve emerging entitiler.</li>
+            <li>Algorithm-based approach to the histological diagnosis of renal cell carcinoma with eosinophilic features (CK7, CD117, CK20, GATA3, Cathepsin K, SDHB paneli önerisi).</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Spesifik entite odaklı çalışmalar</summary>
+          <ul class="refs">
+            <li>Low-grade oncocytic tumour (LOT) – CK7+/CD117–, MTOR/TSC yolu mutasyonları.</li>
+            <li>Eosinophilic vacuolated tumor (EVT) – Cathepsin K+, CD117+, MTOR/TSC ilişkili.</li>
+            <li>Eosinophilic solid and cystic RCC – CK20+/CK7–, TSC1/TSC2 mutasyonları.</li>
+            <li>SDH-deficient RCC – SDHB kaybı ile tanısal, germline SDH mutasyonları.</li>
+            <li>Papillary renal neoplasm with reverse polarity (PRNRP) – CK7+/GATA3+, KRAS mutasyonu.</li>
+          </ul>
+        </details>
+      </section>
+    </main>
+
+    <footer>
+      Bu sayfa yalnızca <strong>eğitim ve hızlı referans</strong> amaçlıdır.
+      Nihai tanı için her zaman WHO 2022 sınıflaması, GUPS konsensusu ve merkezinizin protokolleri esas alınmalıdır.
+    </footer>
+  </div>
 </body>
-<!-- 
-Kaynaklar:
-- Athanazio et al., Classification of renal cell tumors – recommendations of the Brazilian Society of Pathology (2021):contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}:contentReference[oaicite:2]{index=2}
-- Moch et al., WHO Classification of Tumours of the Urinary System and Male Genital Organs, 4th Ed. (2016)
-- Zhou M, Roma A, Magi-Galluzzi C. The usefulness of immunohistochemistry in the classification of renal cell tumors. Clin Lab Med. (2005)
-- Williamson SR et al. (2020) – ISUP Consultation Conference on Renal Tumor Classification and Molecular Pathology
--->
 </html>
